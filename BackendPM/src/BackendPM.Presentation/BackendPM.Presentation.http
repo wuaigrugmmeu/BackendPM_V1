@@ -1,0 +1,6 @@
+@BackendPM.Presentation_HostAddress = http://localhost:5240
+
+GET {{BackendPM.Presentation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
