@@ -36,6 +36,20 @@ public interface IUserRepository : IRepository<User>
     Task<User?> GetWithRolesAsync(Guid userId);
     
     /// <summary>
+    /// 获取包含角色和权限信息的用户
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>包含角色和权限信息的用户对象</returns>
+    Task<User?> GetUserWithRolesAndPermissionsAsync(Guid userId);
+    
+    /// <summary>
+    /// 获取包含角色信息的用户（根据ID）
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>包含角色信息的用户对象</returns>
+    Task<User?> GetByIdWithRolesAsync(Guid userId);
+    
+    /// <summary>
     /// 获取分页的用户列表
     /// </summary>
     /// <param name="pageIndex">页码，从1开始</param>

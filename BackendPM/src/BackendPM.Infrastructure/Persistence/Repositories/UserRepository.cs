@@ -55,6 +55,24 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
                         .ThenInclude(rp => rp.Permission)
             .FirstOrDefaultAsync(u => u.Id == userId);
     }
+
+    /// <summary>
+    /// 获取包含角色和权限信息的用户
+    /// </summary>
+    public async Task<User?> GetUserWithRolesAndPermissionsAsync(Guid userId)
+    {
+        // 此方法与GetWithRolesAsync功能相同，保留此方法名称以兼容现有代码
+        return await GetWithRolesAsync(userId);
+    }
+    
+    /// <summary>
+    /// 获取包含角色信息的用户（根据ID）
+    /// </summary>
+    public async Task<User?> GetByIdWithRolesAsync(Guid userId)
+    {
+        // 此方法与GetWithRolesAsync功能相同，保留此方法名称以兼容现有代码
+        return await GetWithRolesAsync(userId);
+    }
     
     /// <summary>
     /// 获取分页的用户列表

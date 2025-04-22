@@ -62,6 +62,12 @@ public class AuthController : ControllerBase
             // 获取用户角色和权限
             user = await _unitOfWork.Users.GetUserWithRolesAndPermissionsAsync(user.Id);
             
+            // 确保用户及其角色不为空
+            if (user == null || user.UserRoles == null)
+            {
+                return Unauthorized(new { message = "获取用户权限失败" });
+            }
+            
             // 提取用户权限
             var permissions = user.UserRoles
                 .SelectMany(ur => ur.Role.RolePermissions.Select(rp => rp.Permission.Code))
@@ -168,6 +174,12 @@ public class AuthController : ControllerBase
             if (user == null || !user.IsActive)
             {
                 return Unauthorized(new { message = "用户不存在或已被禁用" });
+            }
+
+            // 确保用户角色不为空
+            if (user.UserRoles == null)
+            {
+                return Unauthorized(new { message = "获取用户权限失败" });
             }
 
             // 提取用户权限
