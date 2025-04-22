@@ -95,23 +95,28 @@ public class PermissionRepository : RepositoryBase<Permission>, IPermissionRepos
         return (items, totalCount);
     }
 
-    public Task<Permission?> FindByCodeAsync(string code)
+    public async Task<Permission?> FindByCodeAsync(string code)
     {
-        throw new NotImplementedException();
+        // 调用已实现的方法，保持代码一致性
+        return await GetByCodeAsync(code);
     }
 
-    public Task<List<Permission>> GetRolePermissionsAsync(Guid roleId)
+    public async Task<List<Permission>> GetRolePermissionsAsync(Guid roleId)
     {
-        throw new NotImplementedException();
+        // 调用已实现的方法，保持代码一致性
+        return await GetPermissionsByRoleIdAsync(roleId);
     }
 
-    public Task<List<Permission>> GetUserPermissionsAsync(Guid userId)
+    public async Task<List<Permission>> GetUserPermissionsAsync(Guid userId)
     {
-        throw new NotImplementedException();
+        // 调用已实现的方法，保持代码一致性
+        return await GetPermissionsByUserIdAsync(userId);
     }
 
-    public Task<(List<Permission> Permissions, int TotalCount)> GetPagedListAsync(int pageIndex, int pageSize, string? searchTerm = null)
+    public async Task<(List<Permission> Permissions, int TotalCount)> GetPagedListAsync(int pageIndex, int pageSize, string? searchTerm = null)
     {
-        throw new NotImplementedException();
+        // 调用已实现的方法，保持代码一致性
+        var result = await GetPagedAsync(pageIndex, pageSize, searchTerm);
+        return (result.Items, result.TotalCount);
     }
 }

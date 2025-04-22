@@ -14,9 +14,10 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
     {
     }
 
-    public Task<Role?> FindByNameAsync(string name)
+    public async Task<Role?> FindByNameAsync(string name)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Roles
+            .FirstOrDefaultAsync(r => r.Name == name);
     }
 
     public async Task<Role?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
@@ -63,9 +64,11 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
         return (items, totalCount);
     }
 
-    public Task<(List<Role> Roles, int TotalCount)> GetPagedListAsync(int pageIndex, int pageSize, string? searchTerm = null)
+    public async Task<(List<Role> Roles, int TotalCount)> GetPagedListAsync(int pageIndex, int pageSize, string? searchTerm = null)
     {
-        throw new NotImplementedException();
+        // 调用已实现的方法，保持代码一致性
+        var result = await GetPagedAsync(pageIndex, pageSize, searchTerm);
+        return (result.Items, result.TotalCount);
     }
 
     public async Task<List<Role>> GetRolesForUserAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -77,13 +80,15 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
             .ToListAsync(cancellationToken);
     }
 
-    public Task<List<Role>> GetUserRolesAsync(Guid userId)
+    public async Task<List<Role>> GetUserRolesAsync(Guid userId)
     {
-        throw new NotImplementedException();
+        // 调用已实现的方法，保持代码一致性
+        return await GetRolesForUserAsync(userId);
     }
 
-    public Task<Role?> GetWithPermissionsAsync(Guid roleId)
+    public async Task<Role?> GetWithPermissionsAsync(Guid roleId)
     {
-        throw new NotImplementedException();
+        // 通过已实现的方法获取角色和它的权限
+        return await GetByIdWithPermissionsAsync(roleId);
     }
 }
