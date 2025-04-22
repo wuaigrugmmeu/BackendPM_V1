@@ -1,0 +1,13 @@
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/bin/Debug/net8.0/BackendPM.Domain.deps.json
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/bin/Debug/net8.0/BackendPM.Domain.dll
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/bin/Debug/net8.0/BackendPM.Domain.pdb
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/BackendPM.Domain.csproj.AssemblyReference.cache
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/BackendPM.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/BackendPM.Domain.AssemblyInfoInputs.cache
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/BackendPM.Domain.AssemblyInfo.cs
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/BackendPM.Domain.csproj.CoreCompileInputs.cache
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/BackendPM.Domain.sourcelink.json
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/BackendPM.Domain.dll
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/refint/BackendPM.Domain.dll
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/BackendPM.Domain.pdb
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/Debug/net8.0/ref/BackendPM.Domain.dll

@@ -1,0 +1,16 @@
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/BackendPM.Application.csproj.AssemblyReference.cache
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/BackendPM.Application.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/BackendPM.Application.AssemblyInfoInputs.cache
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/BackendPM.Application.AssemblyInfo.cs
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/BackendPM.Application.csproj.CoreCompileInputs.cache
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/BackendPM.Application.sourcelink.json
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/bin/Debug/net8.0/BackendPM.Application.deps.json
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/bin/Debug/net8.0/BackendPM.Application.dll
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/bin/Debug/net8.0/BackendPM.Application.pdb
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/bin/Debug/net8.0/BackendPM.Domain.dll
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/bin/Debug/net8.0/BackendPM.Domain.pdb
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/BackendP.0BC3019A.Up2Date
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/BackendPM.Application.dll
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/refint/BackendPM.Application.dll
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/BackendPM.Application.pdb
+/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/Debug/net8.0/ref/BackendPM.Application.dll

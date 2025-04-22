@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "DxrR8A30+uA=",
+  "dgSpecHash": "H+2ZWzlCJ2k=",
   "success": true,
   "projectFilePath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/BackendPM.Domain.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/home/codespace/.nuget/packages/mediatr/12.5.0/mediatr.12.5.0.nupkg.sha512",
+    "/home/codespace/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
+    "/home/codespace/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512"
+  ],
   "logs": []
 }

@@ -4,14 +4,90 @@
     "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Presentation/BackendPM.Presentation.csproj": {}
   },
   "projects": {
-    "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Presentation/BackendPM.Presentation.csproj": {
+    "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/BackendPM.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Presentation/BackendPM.Presentation.csproj",
-        "projectName": "BackendPM.Presentation",
-        "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Presentation/BackendPM.Presentation.csproj",
+        "projectUniqueName": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/BackendPM.Application.csproj",
+        "projectName": "BackendPM.Application",
+        "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/BackendPM.Application.csproj",
         "packagesPath": "/home/codespace/.nuget/packages/",
-        "outputPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Presentation/obj/",
+        "outputPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/codespace/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/BackendPM.Domain.csproj": {
+                "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/BackendPM.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "FluentValidation": {
+              "target": "Package",
+              "version": "[11.11.0, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[12.5.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.407/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/BackendPM.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/BackendPM.Domain.csproj",
+        "projectName": "BackendPM.Domain",
+        "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/BackendPM.Domain.csproj",
+        "packagesPath": "/home/codespace/.nuget/packages/",
+        "outputPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/codespace/.nuget/NuGet/NuGet.Config"
@@ -43,9 +119,175 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "MediatR": {
+              "target": "Package",
+              "version": "[12.5.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.407/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Infrastructure/BackendPM.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Infrastructure/BackendPM.Infrastructure.csproj",
+        "projectName": "BackendPM.Infrastructure",
+        "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Infrastructure/BackendPM.Infrastructure.csproj",
+        "packagesPath": "/home/codespace/.nuget/packages/",
+        "outputPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/codespace/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/BackendPM.Application.csproj": {
+                "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/BackendPM.Application.csproj"
+              },
+              "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/BackendPM.Domain.csproj": {
+                "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Domain/BackendPM.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.407/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Presentation/BackendPM.Presentation.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Presentation/BackendPM.Presentation.csproj",
+        "projectName": "BackendPM.Presentation",
+        "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Presentation/BackendPM.Presentation.csproj",
+        "packagesPath": "/home/codespace/.nuget/packages/",
+        "outputPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Presentation/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/codespace/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/BackendPM.Application.csproj": {
+                "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Application/BackendPM.Application.csproj"
+              },
+              "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Infrastructure/BackendPM.Infrastructure.csproj": {
+                "projectPath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Infrastructure/BackendPM.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Mvc.Versioning": {
+              "target": "Package",
+              "version": "[5.1.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.4, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
