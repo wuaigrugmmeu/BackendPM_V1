@@ -57,4 +57,10 @@ public interface IUserRepository : IRepository<User>
     /// <param name="searchTerm">搜索关键词</param>
     /// <returns>用户分页列表</returns>
     Task<(List<User> Users, int TotalCount)> GetPagedListAsync(int pageIndex, int pageSize, string? searchTerm = null);
+    
+    /// <summary>
+    /// 获取所有包含角色信息的用户
+    /// </summary>
+    /// <returns>包含角色信息的用户列表</returns>
+    Task<List<User>> GetAllWithRolesAsync();
 }

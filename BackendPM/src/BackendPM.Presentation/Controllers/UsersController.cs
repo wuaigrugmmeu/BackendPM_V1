@@ -1,273 +1,187 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using BackendPM.Application.Commands.Users;
 using BackendPM.Application.DTOs;
-using BackendPM.Domain.Entities;
-using BackendPM.Domain.Interfaces.Repositories;
+using BackendPM.Application.Queries.Users;
+using BackendPM.Domain.Exceptions;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace BackendPM.Presentation.Controllers;
 
 /// <summary>
-/// 用户管理控制器
+/// 用户控制器 - 使用中介者模式完全解耦
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<UsersController> _logger;
+    private readonly IMediator _mediator;
 
-    public UsersController(IUnitOfWork unitOfWork, ILogger<UsersController> logger)
+    public UsersController(IMediator mediator)
     {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
+        _mediator = mediator;
     }
 
     /// <summary>
     /// 获取所有用户
     /// </summary>
-    /// <param name="queryParams">查询参数</param>
-    /// <returns>用户列表</returns>
     [HttpGet]
-    public async Task<ActionResult<PagedResult<UserDto>>> GetUsers([FromQuery] UserQueryParams queryParams)
+    [Authorize(Policy = "users.view")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<UserDto>>> GetUsers()
     {
-        try
-        {
-            var (users, totalCount) = await _unitOfWork.Users.GetPagedAsync(
-                queryParams.PageIndex,
-                queryParams.PageSize,
-                queryParams.SearchTerm);
-
-            var userDtos = users.Select(u => new UserDto
-            {
-                Id = u.Id,
-                Username = u.Username,
-                Email = u.Email,
-                FullName = u.FullName,
-                IsActive = u.IsActive,
-                CreatedAt = u.CreatedAt,
-                LastModifiedAt = u.LastModifiedAt,
-                Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList()
-            }).ToList();
-
-            var result = new PagedResult<UserDto>
-            {
-                PageIndex = queryParams.PageIndex,
-                PageSize = queryParams.PageSize,
-                TotalCount = totalCount,
-                Items = userDtos
-            };
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "获取用户列表时发生错误");
-            return StatusCode(500, "内部服务器错误");
-        }
+        var query = new GetAllUsersQuery();
+        var result = await _mediator.Send(query);
+        return Ok(result);
     }
 
     /// <summary>
-    /// 获取指定ID的用户
+    /// 根据ID获取用户
     /// </summary>
-    /// <param name="id">用户ID</param>
-    /// <returns>用户信息</returns>
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id}")]
+    [Authorize(Policy = "users.view")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserDto>> GetUser(Guid id)
     {
         try
         {
-            var user = await _unitOfWork.Users.GetByIdWithRolesAsync(id);
-            if (user == null)
-            {
-                return NotFound($"用户ID为 {id} 的用户不存在");
-            }
-
-            var userDto = new UserDto
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                FullName = user.FullName,
-                IsActive = user.IsActive,
-                CreatedAt = user.CreatedAt,
-                LastModifiedAt = user.LastModifiedAt,
-                Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList()
-            };
-
-            return Ok(userDto);
+            var query = new GetUserByIdQuery(id);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
-        catch (Exception ex)
+        catch (EntityNotFoundException)
         {
-            _logger.LogError(ex, "获取用户 {UserId} 信息时发生错误", id);
-            return StatusCode(500, "内部服务器错误");
+            return NotFound();
         }
     }
 
     /// <summary>
-    /// 创建新用户
+    /// 创建用户
     /// </summary>
-    /// <param name="createUserDto">创建用户请求</param>
-    /// <returns>新创建的用户信息</returns>
     [HttpPost]
-    public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto createUserDto)
+    [Authorize(Policy = "users.create")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserRequest request)
     {
         try
         {
-            // 检查用户名是否已存在
-            if (await _unitOfWork.Users.ExistsAsync(u => u.Username == createUserDto.Username))
-            {
-                return BadRequest($"用户名 '{createUserDto.Username}' 已被使用");
-            }
+            var command = new CreateUserCommand(
+                request.Username,
+                request.Email,
+                request.Password,
+                request.FullName);
 
-            // 检查电子邮件是否已存在
-            if (await _unitOfWork.Users.ExistsAsync(u => u.Email == createUserDto.Email))
-            {
-                return BadRequest($"电子邮件 '{createUserDto.Email}' 已被使用");
-            }
-
-            // 对密码进行哈希处理
-            string passwordHash = HashPassword(createUserDto.Password);
-
-            // 创建新用户（通过构造函数传入必要参数，并在构造后调用UpdateProfile设置全名）
-            var user = new User(createUserDto.Username, createUserDto.Email, passwordHash);
-            
-            // 如果有全名，则通过UpdateProfile方法设置
-            if (!string.IsNullOrEmpty(createUserDto.FullName))
-            {
-                user.UpdateProfile(createUserDto.Email, createUserDto.FullName);
-            }
-
-            // 添加角色
-            if (createUserDto.RoleIds?.Any() == true)
-            {
-                foreach (var roleId in createUserDto.RoleIds)
-                {
-                    var role = await _unitOfWork.Roles.GetByIdAsync(roleId);
-                    if (role != null)
-                    {
-                        user.AddRole(role);
-                    }
-                }
-            }
-
-            // 保存用户
-            await _unitOfWork.Users.AddAsync(user);
-            await _unitOfWork.SaveChangesAsync();
-
-            // 返回创建的用户
-            var userDto = new UserDto
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                FullName = user.FullName,
-                IsActive = user.IsActive,
-                CreatedAt = user.CreatedAt,
-                LastModifiedAt = user.LastModifiedAt,
-                Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList()
-            };
-
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, userDto);
+            var result = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetUser), new { id = result.Id }, result);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex.Message.Contains("已被使用"))
         {
-            _logger.LogError(ex, "创建用户时发生错误");
-            return StatusCode(500, "内部服务器错误");
+            return BadRequest(new { error = ex.Message });
         }
     }
 
     /// <summary>
-    /// 更新用户信息
+    /// 更新用户
     /// </summary>
-    /// <param name="id">用户ID</param>
-    /// <param name="updateUserDto">更新用户请求</param>
-    /// <returns>操作结果</returns>
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateUser(Guid id, UpdateUserDto updateUserDto)
+    [HttpPut("{id}")]
+    [Authorize(Policy = "users.edit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<UserDto>> UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
     {
         try
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound($"用户ID为 {id} 的用户不存在");
-            }
+            var command = new UpdateUserCommand(
+                id,
+                request.Email,
+                request.FullName,
+                request.IsActive);
 
-            // 检查邮箱是否被其他用户使用
-            if (!string.IsNullOrEmpty(updateUserDto.Email) && updateUserDto.Email != user.Email)
-            {
-                if (await _unitOfWork.Users.ExistsAsync(u => u.Email == updateUserDto.Email))
-                {
-                    return BadRequest($"电子邮件 '{updateUserDto.Email}' 已被使用");
-                }
-
-                // 更新邮箱
-                user.UpdateProfile(updateUserDto.Email, updateUserDto.FullName);
-            }
-            else if (updateUserDto.FullName != user.FullName)
-            {
-                // 只更新全名
-                user.UpdateProfile(user.Email, updateUserDto.FullName);
-            }
-
-            // 更新用户状态
-            if (updateUserDto.IsActive.HasValue && updateUserDto.IsActive.Value != user.IsActive)
-            {
-                user.SetActiveStatus(updateUserDto.IsActive.Value);
-            }
-
-            // 保存更改
-            _unitOfWork.Users.Update(user);
-            await _unitOfWork.SaveChangesAsync();
-
-            return NoContent();
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
-        catch (Exception ex)
+        catch (EntityNotFoundException)
         {
-            _logger.LogError(ex, "更新用户 {UserId} 时发生错误", id);
-            return StatusCode(500, "内部服务器错误");
+            return NotFound();
+        }
+        catch (Exception ex) when (ex.Message.Contains("已被使用"))
+        {
+            return BadRequest(new { error = ex.Message });
         }
     }
 
     /// <summary>
     /// 删除用户
     /// </summary>
-    /// <param name="id">用户ID</param>
-    /// <returns>操作结果</returns>
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteUser(Guid id)
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "users.delete")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> DeleteUser(Guid id)
     {
         try
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound($"用户ID为 {id} 的用户不存在");
-            }
-
-            // 删除用户
-            _unitOfWork.Users.Delete(user);
-            await _unitOfWork.SaveChangesAsync();
-
+            var command = new DeleteUserCommand(id);
+            await _mediator.Send(command);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (EntityNotFoundException)
         {
-            _logger.LogError(ex, "删除用户 {UserId} 时发生错误", id);
-            return StatusCode(500, "内部服务器错误");
+            return NotFound();
         }
     }
+}
 
+/// <summary>
+/// 创建用户请求
+/// </summary>
+public class CreateUserRequest
+{
     /// <summary>
-    /// 简单的密码哈希实现（在生产环境应使用更安全的方法，如BCrypt）
+    /// 用户名
     /// </summary>
-    private string HashPassword(string password)
-    {
-        using (var sha256 = SHA256.Create())
-        {
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
-        }
-    }
+    public string Username { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// 电子邮箱
+    /// </summary>
+    public string Email { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// 密码
+    /// </summary>
+    public string Password { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// 全名
+    /// </summary>
+    public string? FullName { get; set; }
+}
+
+/// <summary>
+/// 更新用户请求
+/// </summary>
+public class UpdateUserRequest
+{
+    /// <summary>
+    /// 电子邮箱
+    /// </summary>
+    public string Email { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// 全名
+    /// </summary>
+    public string? FullName { get; set; }
+    
+    /// <summary>
+    /// 是否激活
+    /// </summary>
+    public bool IsActive { get; set; }
 }

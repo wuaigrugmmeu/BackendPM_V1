@@ -1264,7 +1264,8 @@
           "AutoMapper": "14.0.0",
           "BackendPM.Domain": "1.0.0",
           "FluentValidation": "11.11.0",
-          "MediatR": "12.5.0"
+          "MediatR": "12.5.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0"
         },
         "compile": {
           "bin/placeholder/BackendPM.Application.dll": {}

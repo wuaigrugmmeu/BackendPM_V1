@@ -1,4 +1,6 @@
+using BackendPM.Domain.Interfaces.Events;
 using BackendPM.Domain.Interfaces.Repositories;
+using BackendPM.Infrastructure.InfrastructureServices.DomainEvents;
 using BackendPM.Infrastructure.InfrastructureServices.Identity;
 using BackendPM.Infrastructure.Persistence.DbContexts;
 using BackendPM.Infrastructure.Persistence.Repositories;
@@ -30,6 +32,10 @@ public static class ServiceCollectionExtensions
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             options.UseSqlite(connectionString);
         });
+
+        // 注册领域事件分发器
+        // 使用新的领域事件通知适配器，实现领域事件与中介者模式的集成
+        services.AddScoped<IDomainEventDispatcher, DomainEventNotificationAdapter>();
 
         // 注册仓储
         services.AddScoped<IUserRepository, UserRepository>();

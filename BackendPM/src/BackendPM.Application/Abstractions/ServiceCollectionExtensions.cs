@@ -3,6 +3,10 @@ using System.Reflection;
 using MediatR;
 using FluentValidation;
 using AutoMapper;
+using BackendPM.Application.Behaviors.Validation;
+using BackendPM.Application.Behaviors.Logging;
+using BackendPM.Application.Behaviors.Transaction;
+using BackendPM.Application.Mediator;
 
 namespace BackendPM.Application.Abstractions;
 
@@ -21,7 +25,16 @@ public static class ServiceCollectionExtensions
         var assembly = Assembly.GetExecutingAssembly();
         
         // 注册MediatR
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
+        services.AddMediatR(cfg => {
+            cfg.RegisterServicesFromAssembly(assembly);
+            
+            // 添加行为管道
+            // 注意管道执行顺序：先验证，再记录日志，最后处理事务
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+        });
+        
         
         // 注册FluentValidation (在最新版本中，我们需要手动注册验证器)
         // FluentValidation不再提供AddValidatorsFromAssembly扩展方法

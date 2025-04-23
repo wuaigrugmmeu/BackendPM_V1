@@ -24,12 +24,20 @@ public class RefreshTokenRepository : RepositoryBase<RefreshToken>, IRefreshToke
     }
 
     /// <summary>
-    /// 根据令牌值获取刷新令牌（与FindByTokenAsync功能相同）
+    /// 根据令牌值获取刷新令牌
     /// </summary>
     public async Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken = default)
     {
         return await _dbContext.RefreshTokens
             .FirstOrDefaultAsync(rt => rt.Token == token, cancellationToken);
+    }
+
+    /// <summary>
+    /// 根据令牌值获取刷新令牌（无取消令牌参数版本）
+    /// </summary>
+    public async Task<RefreshToken?> GetByTokenAsync(string token)
+    {
+        return await GetByTokenAsync(token, CancellationToken.None);
     }
 
     /// <summary>
@@ -40,6 +48,14 @@ public class RefreshTokenRepository : RepositoryBase<RefreshToken>, IRefreshToke
         return await _dbContext.RefreshTokens
             .Where(rt => rt.UserId == userId)
             .ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// 获取用户的所有刷新令牌（无取消令牌参数版本）
+    /// </summary>
+    public async Task<List<RefreshToken>> GetAllByUserIdAsync(Guid userId)
+    {
+        return await GetAllByUserIdAsync(userId, CancellationToken.None);
     }
 
     /// <summary>
@@ -123,15 +139,5 @@ public class RefreshTokenRepository : RepositoryBase<RefreshToken>, IRefreshToke
         }
         
         return expiredTokens.Count;
-    }
-
-    public Task<RefreshToken?> GetByTokenAsync(string token)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<RefreshToken>> GetAllByUserIdAsync(Guid userId)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -1,6 +1,8 @@
 using BackendPM.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BackendPM.Application.EventHandlers;
 
@@ -16,7 +18,7 @@ public class UserCreatedEventHandler : INotificationHandler<UserCreatedEvent>
         _logger = logger;
     }
 
-    public Task Handle(UserCreatedEvent notification, CancellationToken cancellationToken)
+    public Task Handle(UserCreatedEvent notification, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("用户创建事件处理: 用户 {Username} (ID: {Id}) 已创建", 
             notification.User.Username, notification.User.Id);
@@ -39,7 +41,7 @@ public class UserProfileUpdatedEventHandler : INotificationHandler<UserProfileUp
         _logger = logger;
     }
 
-    public Task Handle(UserProfileUpdatedEvent notification, CancellationToken cancellationToken)
+    public Task Handle(UserProfileUpdatedEvent notification, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("用户信息更新事件处理: 用户 {Username} (ID: {Id}) 的信息已更新，邮箱从 {OldEmail} 变更为 {NewEmail}",
             notification.User.Username, notification.User.Id, notification.OldEmail, notification.User.Email);
@@ -62,7 +64,7 @@ public class UserStatusChangedEventHandler : INotificationHandler<UserStatusChan
         _logger = logger;
     }
 
-    public Task Handle(UserStatusChangedEvent notification, CancellationToken cancellationToken)
+    public Task Handle(UserStatusChangedEvent notification, CancellationToken cancellationToken = default)
     {
         string statusChange = notification.NewStatus ? "激活" : "停用";
         _logger.LogInformation("用户状态变更事件处理: 用户 {Username} (ID: {Id}) 状态已{Status}",
@@ -86,7 +88,7 @@ public class UserPasswordChangedEventHandler : INotificationHandler<UserPassword
         _logger = logger;
     }
 
-    public Task Handle(UserPasswordChangedEvent notification, CancellationToken cancellationToken)
+    public Task Handle(UserPasswordChangedEvent notification, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("用户密码修改事件处理: 用户 {Username} (ID: {Id}) 的密码已修改",
             notification.User.Username, notification.User.Id);

@@ -26,6 +26,29 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
             .FirstOrDefaultAsync(r => r.Code == code, cancellationToken);
     }
 
+    /// <summary>
+    /// 根据ID获取包含权限信息的角色
+    /// </summary>
+    public async Task<Role?> GetByIdWithPermissionsAsync(Guid roleId)
+    {
+        return await _dbContext.Roles
+            .Include(r => r.RolePermissions)
+            .ThenInclude(rp => rp.Permission)
+            .FirstOrDefaultAsync(r => r.Id == roleId);
+    }
+
+    /// <summary>
+    /// 获取所有包含权限信息的角色
+    /// </summary>
+    public async Task<List<Role>> GetAllWithPermissionsAsync()
+    {
+        return await _dbContext.Roles
+            .Include(r => r.RolePermissions)
+            .ThenInclude(rp => rp.Permission)
+            .ToListAsync();
+    }
+
+    // 保留带CancellationToken参数的重载方法，以便内部使用
     public async Task<Role?> GetByIdWithPermissionsAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Roles

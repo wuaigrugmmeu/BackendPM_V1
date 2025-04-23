@@ -1,5 +1,6 @@
 using BackendPM.Domain.Interfaces;
 using BackendPM.Domain.Interfaces.Events;
+using System.Collections.Generic;
 
 namespace BackendPM.Domain.Entities;
 
@@ -8,6 +9,8 @@ namespace BackendPM.Domain.Entities;
 /// </summary>
 public abstract class EntityBase: IAggregateRoot
 {
+    private readonly List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
+    
     /// <summary>
     /// 实体唯一标识
     /// </summary>
@@ -23,7 +26,10 @@ public abstract class EntityBase: IAggregateRoot
     /// </summary>
     public DateTime? LastModifiedAt { get; protected set; }
 
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => throw new NotImplementedException();
+    /// <summary>
+    /// 领域事件集合
+    /// </summary>
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     protected EntityBase()
     {
@@ -64,19 +70,30 @@ public abstract class EntityBase: IAggregateRoot
         return Id.GetHashCode();
     }
 
+    /// <summary>
+    /// 添加领域事件
+    /// </summary>
+    /// <param name="domainEvent">领域事件</param>
     public void AddDomainEvent(IDomainEvent domainEvent)
     {
-        throw new NotImplementedException();
+        _domainEvents.Add(domainEvent);
     }
 
+    /// <summary>
+    /// 移除领域事件
+    /// </summary>
+    /// <param name="domainEvent">领域事件</param>
     public void RemoveDomainEvent(IDomainEvent domainEvent)
     {
-        throw new NotImplementedException();
+        _domainEvents.Remove(domainEvent);
     }
 
+    /// <summary>
+    /// 清除所有领域事件
+    /// </summary>
     public void ClearDomainEvents()
     {
-        throw new NotImplementedException();
+        _domainEvents.Clear();
     }
 
     public static bool operator ==(EntityBase? left, EntityBase? right)

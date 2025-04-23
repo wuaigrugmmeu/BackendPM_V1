@@ -1,7 +1,12 @@
+using BackendPM.Domain.Interfaces;
 using BackendPM.Domain.Interfaces.Repositories;
 using BackendPM.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BackendPM.Infrastructure.Persistence.Repositories;
 
@@ -12,6 +17,7 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _dbContext;
     private IDbContextTransaction? _currentTransaction;
+    private readonly Dictionary<Type, object> _repositories;
     
     public IUserRepository Users { get; }
     public IRoleRepository Roles { get; }
@@ -30,6 +36,7 @@ public class UnitOfWork : IUnitOfWork
         Roles = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
         Permissions = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
         RefreshTokens = refreshTokenRepository ?? throw new ArgumentNullException(nameof(refreshTokenRepository));
+        _repositories = new Dictionary<Type, object>();
     }
     
     /// <summary>
@@ -113,8 +120,26 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    IRepository<TEntity> IUnitOfWork.Repository<TEntity>()
+    /// <summary>
+    /// 获取指定实体类型的仓储
+    /// </summary>
+    /// <typeparam name="TEntity">实体类型</typeparam>
+    /// <returns>该实体类型的仓储实例</returns>
+    public IRepository<TEntity> Repository<TEntity>() where TEntity : class, IAggregateRoot
     {
-        throw new NotImplementedException();
+        var type = typeof(TEntity);
+
+        if (!_repositories.ContainsKey(type))
+        {
+            var repositoryType = typeof(RepositoryBase<>).MakeGenericType(type);
+            var repository = Activator.CreateInstance(repositoryType, _dbContext);
+            
+            if (repository == null)
+                throw new InvalidOperationException($"无法创建实体 {type.Name} 的仓储");
+                
+            _repositories.Add(type, repository);
+        }
+
+        return (IRepository<TEntity>)_repositories[type];
     }
 }

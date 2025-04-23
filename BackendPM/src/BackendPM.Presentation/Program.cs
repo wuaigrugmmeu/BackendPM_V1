@@ -3,6 +3,7 @@ using BackendPM.Infrastructure.Configuration;
 using BackendPM.Infrastructure.DataSeeding;
 using BackendPM.Infrastructure.Persistence.DbContexts;
 using BackendPM.Presentation.Authorization;
+using BackendPM.Presentation.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -111,10 +112,13 @@ else
     // 生产环境也需要确保数据库已创建并迁移
     await AppDbInitializer.InitializeDatabaseAsync(app.Services, isProduction: true);
     
-    // 生产环境添加异常处理中间件
+    // 生产环境默认使用ASP.NET Core的内置异常处理页面
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+
+// 注册全局异常处理中间件（放在管道前面以捕获所有异常）
+app.UseGlobalExceptionHandling();
 
 app.UseHttpsRedirection();
 
