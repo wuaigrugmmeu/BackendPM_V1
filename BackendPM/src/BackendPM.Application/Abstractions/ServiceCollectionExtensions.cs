@@ -2,11 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using MediatR;
 using FluentValidation;
-using AutoMapper;
 using BackendPM.Application.Behaviors.Validation;
 using BackendPM.Application.Behaviors.Logging;
 using BackendPM.Application.Behaviors.Transaction;
-using BackendPM.Application.Mediator;
 
 namespace BackendPM.Application.Abstractions;
 
