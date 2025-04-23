@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using BackendPM.Application.DTOs;
 
 namespace BackendPM.Application.Abstractions;
@@ -8,29 +9,16 @@ namespace BackendPM.Application.Abstractions;
 public interface IAuthService
 {
     /// <summary>
-    /// 登录验证
+    /// 登录并获取令牌
     /// </summary>
-    /// <param name="request">登录请求</param>
-    /// <returns>认证响应</returns>
-    Task<AuthResponseDto> LoginAsync(LoginRequestDto request);
+    /// <param name="loginRequest">登录请求</param>
+    /// <returns>登录响应，包含访问令牌和刷新令牌</returns>
+    Task<AuthResponseDto> LoginAsync(LoginRequestDto loginRequest);
     
     /// <summary>
     /// 刷新令牌
     /// </summary>
-    /// <param name="request">刷新令牌请求</param>
-    /// <returns>认证响应</returns>
-    Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request);
-    
-    /// <summary>
-    /// 修改用户密码
-    /// </summary>
-    /// <param name="userId">用户ID</param>
-    /// <param name="request">修改密码请求</param>
-    Task ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request);
-    
-    /// <summary>
-    /// 登出系统
-    /// </summary>
-    /// <param name="userId">用户ID</param>
-    Task LogoutAsync(Guid userId);
+    /// <param name="refreshRequest">刷新令牌请求</param>
+    /// <returns>刷新令牌响应，包含新的访问令牌和刷新令牌</returns>
+    Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto refreshRequest);
 }

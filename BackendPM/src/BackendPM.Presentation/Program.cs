@@ -66,7 +66,7 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // 添加基于权限的授权 - 使用完全限定的命名空间和类型名称来解决方法歧义
-BackendPM.Presentation.Authorization.AuthorizationExtensions.AddPermissionBasedAuthorization(builder.Services);
+AuthorizationExtensions.AddPermissionBasedAuthorization(builder.Services);
 
 // CORS配置
 builder.Services.AddCors(options =>
