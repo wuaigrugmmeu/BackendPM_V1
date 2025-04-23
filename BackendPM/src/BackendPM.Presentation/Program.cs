@@ -121,6 +121,9 @@ else
 // 注册全局异常处理中间件（放在管道前面以捕获所有异常）
 app.UseGlobalExceptionHandling();
 
+// 添加请求耗时监控中间件
+app.UseRequestTiming();
+
 app.UseHttpsRedirection();
 
 // 启用CORS
@@ -130,7 +133,7 @@ app.UseCors();
 app.UseAuthentication();
 
 // 使用权限验证中间件
-app.UseMiddleware<PermissionAuthorizationMiddleware>();
+app.UsePermissionAuthorization();
 
 // 启用授权
 app.UseAuthorization();

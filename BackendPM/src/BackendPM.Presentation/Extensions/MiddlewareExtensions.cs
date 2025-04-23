@@ -17,4 +17,24 @@ public static class MiddlewareExtensions
     {
         return app.UseMiddleware<ExceptionHandlingMiddleware>();
     }
+
+    /// <summary>
+    /// 使用请求耗时监控中间件
+    /// </summary>
+    /// <param name="app">应用程序构建器</param>
+    /// <returns>应用程序构建器</returns>
+    public static IApplicationBuilder UseRequestTiming(this IApplicationBuilder app)
+    {
+        return app.UseMiddleware<RequestTimingMiddleware>();
+    }
+    
+    /// <summary>
+    /// 使用权限验证中间件
+    /// </summary>
+    /// <param name="app">应用程序构建器</param>
+    /// <returns>应用程序构建器</returns>
+    public static IApplicationBuilder UsePermissionAuthorization(this IApplicationBuilder app)
+    {
+        return app.UseMiddleware<PermissionAuthorizationMiddleware>();
+    }
 }
