@@ -1,3 +1,5 @@
+using BackendPM.Domain.Exceptions;
+
 namespace BackendPM.Domain.Entities;
 
 /// <summary>
@@ -95,6 +97,71 @@ public class Role : EntityBase
             RolePermissions.Remove(rolePermission);
             UpdateModificationTime();
         }
+    }
+    
+    /// <summary>
+    /// 批量设置角色权限
+    /// </summary>
+    /// <param name="permissions">要设置的权限列表</param>
+    /// <remarks>
+    /// 此方法会清除当前角色的所有权限，然后添加指定的权限
+    /// </remarks>
+    public void SetPermissions(IEnumerable<Permission> permissions)
+    {
+        // 如果是系统角色且权限列表为空，则抛出异常
+        if (IsSystem && (permissions == null || !permissions.Any()))
+        {
+            throw new BusinessRuleViolationException("系统角色不能设置为无权限");
+        }
+        
+        // 清除当前所有权限
+        RolePermissions.Clear();
+        
+        // 添加新的权限
+        if (permissions != null)
+        {
+            foreach (var permission in permissions)
+            {
+                RolePermissions.Add(new RolePermission(this, permission));
+            }
+        }
+        
+        UpdateModificationTime();
+    }
+    
+    /// <summary>
+    /// 批量添加权限
+    /// </summary>
+    /// <param name="permissions">要添加的权限列表</param>
+    public void AddPermissions(IEnumerable<Permission> permissions)
+    {
+        if (permissions == null)
+            return;
+            
+        bool changed = false;
+        foreach (var permission in permissions)
+        {
+            if (!RolePermissions.Any(rp => rp.PermissionId == permission.Id))
+            {
+                RolePermissions.Add(new RolePermission(this, permission));
+                changed = true;
+            }
+        }
+        
+        if (changed)
+        {
+            UpdateModificationTime();
+        }
+    }
+    
+    /// <summary>
+    /// 检查角色是否拥有指定权限
+    /// </summary>
+    /// <param name="permissionCode">权限编码</param>
+    /// <returns>是否拥有权限</returns>
+    public bool HasPermission(string permissionCode)
+    {
+        return RolePermissions.Any(rp => rp.Permission.Code == permissionCode);
     }
     
     private void ValidateName(string name)

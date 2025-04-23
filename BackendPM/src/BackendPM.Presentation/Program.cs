@@ -4,6 +4,7 @@ using BackendPM.Infrastructure.DataSeeding;
 using BackendPM.Infrastructure.Persistence.DbContexts;
 using BackendPM.Presentation.Authorization;
 using BackendPM.Presentation.Extensions;
+using BackendPM.Presentation.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -127,6 +128,9 @@ app.UseCors();
 
 // 启用身份验证
 app.UseAuthentication();
+
+// 使用权限验证中间件
+app.UseMiddleware<PermissionAuthorizationMiddleware>();
 
 // 启用授权
 app.UseAuthorization();

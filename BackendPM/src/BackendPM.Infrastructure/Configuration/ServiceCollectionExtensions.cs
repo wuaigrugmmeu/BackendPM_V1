@@ -1,7 +1,9 @@
 using BackendPM.Domain.Interfaces.Events;
 using BackendPM.Domain.Interfaces.Repositories;
+using BackendPM.Domain.Interfaces.DomainServices;
 using BackendPM.Infrastructure.InfrastructureServices.DomainEvents;
 using BackendPM.Infrastructure.InfrastructureServices.Identity;
+using BackendPM.Infrastructure.InfrastructureServices.Permissions;
 using BackendPM.Infrastructure.Persistence.DbContexts;
 using BackendPM.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -43,6 +45,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
+        // 注册权限服务
+        services.AddMemoryCache(); // 确保内存缓存服务可用
+        services.AddScoped<IPermissionService, PermissionService>();
         
         // 注册JWT服务
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
