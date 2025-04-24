@@ -35,6 +35,9 @@
         "build": {
           "buildTransitive/net6.0/_._": {}
         }
+      },
+      "SonarAnalyzer.CSharp/10.8.0.113526": {
+        "type": "package"
       }
     }
   },
@@ -92,11 +95,30 @@
         "microsoft.extensions.dependencyinjection.abstractions.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "SonarAnalyzer.CSharp/10.8.0.113526": {
+      "sha512": "2+Gk4w467coeL9ozQlAN9y0mwMj3XmlacFYZE0Ptz4LC4EkmMPwY5ygYPkwg9/xJ1SIShmoAC+5Sinb3khHDng==",
+      "type": "package",
+      "path": "sonaranalyzer.csharp/10.8.0.113526",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "analyzers/SonarAnalyzer.CSharp.dll",
+        "images/sonarsource_64.png",
+        "license/THIRD-PARTY-NOTICES.txt",
+        "sonaranalyzer.csharp.10.8.0.113526.nupkg.sha512",
+        "sonaranalyzer.csharp.nuspec",
+        "tools/install.ps1",
+        "tools/uninstall.ps1"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "MediatR >= 12.5.0"
+      "MediatR >= 12.5.0",
+      "SonarAnalyzer.CSharp >= 10.8.0.113526"
     ]
   },
   "packageFolders": {
@@ -144,6 +166,12 @@
           "MediatR": {
             "target": "Package",
             "version": "[12.5.0, )"
+          },
+          "SonarAnalyzer.CSharp": {
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[10.8.0.113526, )"
           }
         },
         "imports": [

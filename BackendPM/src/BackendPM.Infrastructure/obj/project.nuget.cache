@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "trEHIiZVLEA=",
+  "dgSpecHash": "lXdSlg5lT9Q=",
   "success": true,
   "projectFilePath": "/workspaces/BackendPM_V1/BackendPM/src/BackendPM.Infrastructure/BackendPM.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -44,6 +44,7 @@
     "/home/codespace/.nuget/packages/microsoft.identitymodel.protocols.openidconnect/7.1.2/microsoft.identitymodel.protocols.openidconnect.7.1.2.nupkg.sha512",
     "/home/codespace/.nuget/packages/microsoft.identitymodel.tokens/7.1.2/microsoft.identitymodel.tokens.7.1.2.nupkg.sha512",
     "/home/codespace/.nuget/packages/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg.sha512",
+    "/home/codespace/.nuget/packages/sonaranalyzer.csharp/10.8.0.113526/sonaranalyzer.csharp.10.8.0.113526.nupkg.sha512",
     "/home/codespace/.nuget/packages/sqlitepclraw.bundle_e_sqlite3/2.1.10/sqlitepclraw.bundle_e_sqlite3.2.1.10.nupkg.sha512",
     "/home/codespace/.nuget/packages/sqlitepclraw.core/2.1.10/sqlitepclraw.core.2.1.10.nupkg.sha512",
     "/home/codespace/.nuget/packages/sqlitepclraw.lib.e_sqlite3/2.1.10/sqlitepclraw.lib.e_sqlite3.2.1.10.nupkg.sha512",

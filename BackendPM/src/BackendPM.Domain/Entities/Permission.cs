@@ -1,3 +1,4 @@
+using BackendPM.Domain.Constants;
 using BackendPM.Domain.Exceptions;
 
 namespace BackendPM.Domain.Entities;
@@ -98,7 +99,7 @@ public class Permission : EntityBase
     {
         if (IsSystem)
         {
-            throw new BusinessRuleViolationException("系统内置权限不允许修改基本信息");
+            throw new BusinessRuleViolationException(ErrorMessages.Permission.SystemPermissionModificationForbidden);
         }
         
         ValidateName(name);
@@ -118,27 +119,27 @@ public class Permission : EntityBase
     private void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("权限名称不能为空", nameof(name));
+            throw new ArgumentException(ErrorMessages.Permission.NameRequired, nameof(name));
             
         if (name.Length > 50)
-            throw new ArgumentException("权限名称过长", nameof(name));
+            throw new ArgumentException(ErrorMessages.Permission.NameTooLong, nameof(name));
     }
     
     private void ValidateCode(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
-            throw new ArgumentException("权限编码不能为空", nameof(code));
+            throw new ArgumentException(ErrorMessages.Permission.CodeRequired, nameof(code));
             
         if (code.Length > 100)
-            throw new ArgumentException("权限编码过长", nameof(code));
+            throw new ArgumentException(ErrorMessages.Permission.CodeTooLong, nameof(code));
     }
     
     private void ValidateGroup(string group)
     {
         if (string.IsNullOrWhiteSpace(group))
-            throw new ArgumentException("权限分组不能为空", nameof(group));
+            throw new ArgumentException(ErrorMessages.Permission.GroupRequired, nameof(group));
             
         if (group.Length > 50)
-            throw new ArgumentException("权限分组名称过长", nameof(group));
+            throw new ArgumentException(ErrorMessages.Permission.GroupTooLong, nameof(group));
     }
 }

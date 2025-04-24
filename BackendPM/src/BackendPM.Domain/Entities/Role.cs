@@ -1,3 +1,4 @@
+using BackendPM.Domain.Constants;
 using BackendPM.Domain.Exceptions;
 
 namespace BackendPM.Domain.Entities;
@@ -111,7 +112,7 @@ public class Role : EntityBase
         // 如果是系统角色且权限列表为空，则抛出异常
         if (IsSystem && (permissions == null || !permissions.Any()))
         {
-            throw new BusinessRuleViolationException("系统角色不能设置为无权限");
+            throw new BusinessRuleViolationException(ErrorMessages.Role.SystemRoleRequiresPermissions);
         }
         
         // 清除当前所有权限
@@ -167,18 +168,18 @@ public class Role : EntityBase
     private void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("角色名称不能为空", nameof(name));
+            throw new ArgumentException(ErrorMessages.Role.NameRequired, nameof(name));
             
         if (name.Length > 50)
-            throw new ArgumentException("角色名称过长", nameof(name));
+            throw new ArgumentException(ErrorMessages.Role.NameTooLong, nameof(name));
     }
     
     private void ValidateCode(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
-            throw new ArgumentException("角色编码不能为空", nameof(code));
+            throw new ArgumentException(ErrorMessages.Role.CodeRequired, nameof(code));
             
         if (code.Length > 50)
-            throw new ArgumentException("角色编码过长", nameof(code));
+            throw new ArgumentException(ErrorMessages.Role.CodeTooLong, nameof(code));
     }
 }

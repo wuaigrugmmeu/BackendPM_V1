@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BackendPM.Domain.Constants;
 using BackendPM.Domain.Exceptions;
 using BackendPM.Domain.Interfaces.Repositories;
 using MediatR;
@@ -43,19 +44,20 @@ public class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand>
     {
         // 获取角色实体
         var role = await _unitOfWork.Roles.GetByIdAsync(command.RoleId)
-            ?? throw new EntityNotFoundException("Role", command.RoleId);
+            ?? throw new EntityNotFoundException(ErrorMessages.EntityNames.RoleType, command.RoleId);
             
         // 检查是否为系统角色
         if (role.IsSystem)
         {
-            throw new BusinessRuleViolationException("系统角色不允许删除");
+            throw new BusinessRuleViolationException(ErrorMessages.Role.SystemRoleDeletionForbidden);
         }
         
         // 检查角色是否有关联的用户
         var usersWithRole = await _unitOfWork.Users.FindAsync(u => u.UserRoles.Any(ur => ur.RoleId == command.RoleId));
         if (usersWithRole.Any())
         {
-            throw new BusinessRuleViolationException($"无法删除角色 '{role.Name}'，因为它已分配给{usersWithRole.Count}个用户");
+            throw new BusinessRuleViolationException(string.Format(
+                ErrorMessages.Role.RoleInUse, role.Name, usersWithRole.Count));
         }
         
         // 删除角色

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BackendPM.Domain.Constants;
 using BackendPM.Domain.Exceptions;
 using BackendPM.Domain.Interfaces.Repositories;
 using MediatR;
@@ -41,7 +42,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
     public async Task Handle(DeleteUserCommand command, CancellationToken cancellationToken = default)
     {
         var user = await _unitOfWork.Users.GetByIdAsync(command.UserId)
-            ?? throw new EntityNotFoundException("User", command.UserId);
+            ?? throw new EntityNotFoundException(ErrorMessages.EntityNames.UserType, command.UserId);
             
         // 执行删除操作
         _unitOfWork.Users.Delete(user);

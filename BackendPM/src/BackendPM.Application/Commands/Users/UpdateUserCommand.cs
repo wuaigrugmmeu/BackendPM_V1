@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BackendPM.Application.DTOs;
+using BackendPM.Domain.Constants;
 using BackendPM.Domain.Exceptions;
 using BackendPM.Domain.Interfaces.Repositories;
 using MediatR;
@@ -62,13 +63,13 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
     {
         // 获取用户
         var user = await _unitOfWork.Users.GetByIdWithRolesAsync(command.UserId)
-            ?? throw new EntityNotFoundException("User", command.UserId);
+            ?? throw new EntityNotFoundException(ErrorMessages.EntityNames.UserType, command.UserId);
         
         // 检查电子邮件是否被其他用户使用
         if (user.Email != command.Email && 
             await _unitOfWork.Users.ExistsAsync(u => u.Email == command.Email && u.Id != command.UserId))
         {
-            throw new InvalidOperationException($"电子邮件 '{command.Email}' 已被其他用户使用");
+            throw new InvalidOperationException(string.Format(ErrorMessages.User.EmailAlreadyUsed, command.Email));
         }
         
         // 更新用户信息

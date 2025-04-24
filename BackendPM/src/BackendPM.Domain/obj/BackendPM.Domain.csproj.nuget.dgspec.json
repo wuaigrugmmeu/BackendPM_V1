@@ -46,6 +46,12 @@
             "MediatR": {
               "target": "Package",
               "version": "[12.5.0, )"
+            },
+            "SonarAnalyzer.CSharp": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[10.8.0.113526, )"
             }
           },
           "imports": [

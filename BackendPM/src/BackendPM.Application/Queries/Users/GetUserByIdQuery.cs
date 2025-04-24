@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BackendPM.Application.DTOs;
+using BackendPM.Domain.Constants;
 using BackendPM.Domain.Exceptions;
 using BackendPM.Domain.Interfaces.Repositories;
 using MediatR;
@@ -40,7 +41,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
     public async Task<UserDto> Handle(GetUserByIdQuery query, CancellationToken cancellationToken = default)
     {
         var user = await _unitOfWork.Users.GetByIdWithRolesAsync(query.UserId)
-            ?? throw new EntityNotFoundException("User", query.UserId);
+            ?? throw new EntityNotFoundException(ErrorMessages.EntityNames.UserType, query.UserId);
             
         var userDto = new UserDto
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BackendPM.Application.DTOs;
+using BackendPM.Domain.Constants;
 using BackendPM.Domain.Exceptions;
 using BackendPM.Domain.Interfaces.Repositories;
 using MediatR;
@@ -63,12 +64,12 @@ public class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, RoleD
     {
         // 获取角色实体
         var role = await _unitOfWork.Roles.GetByIdWithPermissionsAsync(command.RoleId)
-            ?? throw new EntityNotFoundException("Role", command.RoleId);
+            ?? throw new EntityNotFoundException(ErrorMessages.EntityNames.RoleType, command.RoleId);
             
         // 检查是否为系统角色
         if (role.IsSystem)
         {
-            throw new BusinessRuleViolationException("系统角色不允许修改");
+            throw new BusinessRuleViolationException(ErrorMessages.Role.SystemRoleModificationForbidden);
         }
         
         // 更新角色信息
