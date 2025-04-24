@@ -18,6 +18,8 @@ public class UnitOfWork(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IPermissionRepository permissionRepository,
+    IDepartmentRepository departmentRepository,
+    IMenuRepository menuRepository,
     IRefreshTokenRepository refreshTokenRepository) : IUnitOfWork
 {
     private readonly AppDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
@@ -27,6 +29,8 @@ public class UnitOfWork(
     public IUserRepository Users { get; } = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     public IRoleRepository Roles { get; } = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
     public IPermissionRepository Permissions { get; } = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
+    public IDepartmentRepository Departments { get; } = departmentRepository ?? throw new ArgumentNullException(nameof(departmentRepository));
+    public IMenuRepository Menus { get; } = menuRepository ?? throw new ArgumentNullException(nameof(menuRepository));
     public IRefreshTokenRepository RefreshTokens { get; } = refreshTokenRepository ?? throw new ArgumentNullException(nameof(refreshTokenRepository));
 
     /// <summary>

@@ -26,6 +26,16 @@ public interface IUnitOfWork : IDisposable
     /// 权限仓储
     /// </summary>
     IPermissionRepository Permissions { get; }
+    
+    /// <summary>
+    /// 部门仓储
+    /// </summary>
+    IDepartmentRepository Departments { get; }
+    
+    /// <summary>
+    /// 菜单仓储
+    /// </summary>
+    IMenuRepository Menus { get; }
 
     /// <summary>
     /// 刷新令牌仓储

@@ -32,6 +32,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options,
     public DbSet<Permission> Permissions { get; set; } = null!;
 
     /// <summary>
+    /// 部门表
+    /// </summary>
+    public DbSet<Department> Departments { get; set; } = null!;
+
+    /// <summary>
+    /// 菜单表
+    /// </summary>
+    public DbSet<Menu> Menus { get; set; } = null!;
+
+    /// <summary>
     /// 用户角色关联表
     /// </summary>
     public DbSet<UserRole> UserRoles { get; set; } = null!;
@@ -40,6 +50,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options,
     /// 角色权限关联表
     /// </summary>
     public DbSet<RolePermission> RolePermissions { get; set; } = null!;
+
+    /// <summary>
+    /// 用户部门关联表
+    /// </summary>
+    public DbSet<UserDepartment> UserDepartments { get; set; } = null!;
+
+    /// <summary>
+    /// 角色菜单关联表
+    /// </summary>
+    public DbSet<RoleMenu> RoleMenus { get; set; } = null!;
 
     /// <summary>
     /// 刷新令牌表
@@ -77,6 +97,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options,
 
             // 确保角色编码唯一
             entity.HasIndex(e => e.Code).IsUnique();
+            
+            // 配置角色继承关系
+            entity.HasOne(r => r.ParentRole)
+                .WithMany(r => r.ChildRoles)
+                .HasForeignKey(r => r.ParentRoleId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict); // 使用Restrict而非Cascade避免删除父角色时级联删除所有子角色
         });
 
         // 配置权限实体
@@ -91,6 +118,53 @@ public class AppDbContext(DbContextOptions<AppDbContext> options,
 
             // 确保权限编码唯一
             entity.HasIndex(e => e.Code).IsUnique();
+        });
+
+        // 配置部门实体
+        modelBuilder.Entity<Department>(entity =>
+        {
+            entity.ToTable("Departments");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(200);
+            entity.Property(e => e.SortOrder).IsRequired();
+            entity.Property(e => e.IsSystem).IsRequired();
+
+            // 确保部门编码唯一
+            entity.HasIndex(e => e.Code).IsUnique();
+            
+            // 配置部门继承关系
+            entity.HasOne(d => d.ParentDepartment)
+                .WithMany(d => d.ChildDepartments)
+                .HasForeignKey(d => d.ParentDepartmentId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict); // 使用Restrict而非Cascade避免删除父部门时级联删除所有子部门
+        });
+
+        // 配置菜单实体
+        modelBuilder.Entity<Menu>(entity =>
+        {
+            entity.ToTable("Menus");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Path).HasMaxLength(200);
+            entity.Property(e => e.Icon).HasMaxLength(50);
+            entity.Property(e => e.Component).HasMaxLength(200);
+            entity.Property(e => e.SortOrder).IsRequired();
+            entity.Property(e => e.Visible).IsRequired();
+            entity.Property(e => e.IsSystem).IsRequired();
+
+            // 确保菜单编码唯一
+            entity.HasIndex(e => e.Code).IsUnique();
+            
+            // 配置菜单继承关系
+            entity.HasOne(m => m.ParentMenu)
+                .WithMany(m => m.ChildMenus)
+                .HasForeignKey(m => m.ParentMenuId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict); // 使用Restrict而非Cascade避免删除父菜单时级联删除所有子菜单
         });
 
         // 配置用户角色关联
@@ -128,6 +202,45 @@ public class AppDbContext(DbContextOptions<AppDbContext> options,
             entity.HasOne(rp => rp.Permission)
                 .WithMany(p => p.RolePermissions)
                 .HasForeignKey(rp => rp.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // 配置用户部门关联
+        modelBuilder.Entity<UserDepartment>(entity =>
+        {
+            entity.ToTable("UserDepartments");
+            entity.HasKey(e => new { e.UserId, e.DepartmentId });
+            entity.Property(e => e.IsPrimary).IsRequired();
+
+            // 配置与User的关系
+            entity.HasOne(ud => ud.User)
+                .WithMany(u => u.UserDepartments)
+                .HasForeignKey(ud => ud.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // 配置与Department的关系
+            entity.HasOne(ud => ud.Department)
+                .WithMany(d => d.UserDepartments)
+                .HasForeignKey(ud => ud.DepartmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // 配置角色菜单关联
+        modelBuilder.Entity<RoleMenu>(entity =>
+        {
+            entity.ToTable("RoleMenus");
+            entity.HasKey(e => new { e.RoleId, e.MenuId });
+
+            // 配置与Role的关系
+            entity.HasOne(rm => rm.Role)
+                .WithMany(r => r.RoleMenus)
+                .HasForeignKey(rm => rm.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // 配置与Menu的关系
+            entity.HasOne(rm => rm.Menu)
+                .WithMany(m => m.RoleMenus)
+                .HasForeignKey(rm => rm.MenuId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

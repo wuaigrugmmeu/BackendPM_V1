@@ -43,9 +43,50 @@ public class UserDto
     public DateTime? LastModifiedAt { get; set; }
 
     /// <summary>
-    /// 用户角色
+    /// 用户角色名称列表（保留向后兼容性）
     /// </summary>
     public List<string> Roles { get; set; } = [];
+    
+    /// <summary>
+    /// 用户角色详细信息
+    /// </summary>
+    public List<UserRoleDto> UserRoles { get; set; } = [];
+    
+    /// <summary>
+    /// 用户部门详细信息
+    /// </summary>
+    public List<UserDepartmentDto> UserDepartments { get; set; } = [];
+    
+    /// <summary>
+    /// 主部门信息
+    /// </summary>
+    public UserDepartmentDto? PrimaryDepartment { get; set; }
+}
+
+/// <summary>
+/// 用户角色DTO
+/// </summary>
+public class UserRoleDto
+{
+    /// <summary>
+    /// 角色ID
+    /// </summary>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// 角色名称
+    /// </summary>
+    public string Name { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// 角色编码
+    /// </summary>
+    public string Code { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// 是否为系统角色
+    /// </summary>
+    public bool IsSystemRole { get; set; }
 }
 
 /// <summary>
@@ -84,6 +125,16 @@ public class CreateUserDto
     /// 角色ID列表
     /// </summary>
     public List<Guid>? RoleIds { get; set; }
+    
+    /// <summary>
+    /// 部门ID列表
+    /// </summary>
+    public List<Guid>? DepartmentIds { get; set; }
+    
+    /// <summary>
+    /// 主部门ID
+    /// </summary>
+    public Guid? PrimaryDepartmentId { get; set; }
 }
 
 /// <summary>

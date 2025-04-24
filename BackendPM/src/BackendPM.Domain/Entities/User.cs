@@ -37,6 +37,11 @@ public class User : AggregateRoot
     /// 用户的角色列表
     /// </summary>
     public virtual ICollection<UserRole> UserRoles { get; private set; }
+    
+    /// <summary>
+    /// 用户的部门列表
+    /// </summary>
+    public virtual ICollection<UserDepartment> UserDepartments { get; private set; }
 
     // 无参构造函数用于EF Core
     private User()
@@ -45,6 +50,7 @@ public class User : AggregateRoot
         Email = string.Empty;
         PasswordHash = string.Empty;
         UserRoles = new List<UserRole>();
+        UserDepartments = new List<UserDepartment>();
     }
 
     /// <summary>
@@ -60,6 +66,7 @@ public class User : AggregateRoot
         PasswordHash = passwordHash;
         IsActive = true;
         UserRoles = new List<UserRole>();
+        UserDepartments = new List<UserDepartment>();
 
         // 添加用户创建事件
         AddDomainEvent(new UserCreatedEvent(this));
@@ -155,6 +162,59 @@ public class User : AggregateRoot
 
             // 添加用户角色变更事件
             AddDomainEvent(new UserRoleRemovedEvent(this, role));
+        }
+    }
+
+    /// <summary>
+    /// 添加用户部门
+    /// </summary>
+    public void AddDepartment(Department department, bool isPrimary = false)
+    {
+        // 如果添加为主部门，需要先将其他部门设置为非主部门
+        if (isPrimary)
+        {
+            foreach (var userDepartment in UserDepartments.Where(ud => ud.IsPrimary))
+            {
+                userDepartment.SetAsPrimary(false);
+            }
+        }
+
+        // 检查是否已经添加了该部门
+        if (UserDepartments.Any(ud => ud.DepartmentId == department.Id))
+        {
+            // 如果部门已存在，只需更新是否为主部门
+            var existingUserDepartment = UserDepartments.First(ud => ud.DepartmentId == department.Id);
+            existingUserDepartment.SetAsPrimary(isPrimary);
+            return;
+        }
+
+        UserDepartments.Add(new UserDepartment(this, department, isPrimary));
+        UpdateModificationTime();
+
+        // 添加用户部门变更事件
+        AddDomainEvent(new UserDepartmentAddedEvent(this, department));
+    }
+
+    /// <summary>
+    /// 移除用户部门
+    /// </summary>
+    public void RemoveDepartment(Department department)
+    {
+        var userDepartment = UserDepartments.FirstOrDefault(ud => ud.DepartmentId == department.Id);
+        if (userDepartment != null)
+        {
+            bool isPrimary = userDepartment.IsPrimary;
+            UserDepartments.Remove(userDepartment);
+            UpdateModificationTime();
+
+            // 如果移除的是主部门且还有其他部门，将第一个设为主部门
+            if (isPrimary && UserDepartments.Any())
+            {
+                UserDepartments.First().SetAsPrimary(true);
+            }
+
+            // 添加用户部门变更事件
+            AddDomainEvent(new UserDepartmentRemovedEvent(this, department));
         }
     }
 
