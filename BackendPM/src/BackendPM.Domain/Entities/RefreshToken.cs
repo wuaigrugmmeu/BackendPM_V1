@@ -9,31 +9,31 @@ public class RefreshToken : EntityBase
     /// 关联的用户ID
     /// </summary>
     public Guid UserId { get; private set; }
-    
+
     /// <summary>
     /// 令牌值
     /// </summary>
     public string Token { get; private set; }
-    
+
     /// <summary>
     /// 过期时间
     /// </summary>
     public DateTime ExpiryTime { get; private set; }
-    
+
     /// <summary>
     /// 是否已使用
     /// </summary>
     public bool IsUsed { get; private set; }
-    
+
     /// <summary>
     /// 是否已撤销
     /// </summary>
     public bool IsRevoked { get; private set; }
-    
+
     /// <summary>
     /// 用户关联
     /// </summary>
-    public virtual User? User { get; private set; }
+    public virtual User? User { get; }
 
     // 无参构造函数用于EF Core
     private RefreshToken()

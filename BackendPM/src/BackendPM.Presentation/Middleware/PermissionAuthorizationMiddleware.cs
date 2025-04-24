@@ -10,18 +10,12 @@ namespace BackendPM.Presentation.Middleware;
 /// <summary>
 /// 权限验证中间件
 /// </summary>
-public class PermissionAuthorizationMiddleware
+public class PermissionAuthorizationMiddleware(
+    RequestDelegate next,
+    ILogger<PermissionAuthorizationMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<PermissionAuthorizationMiddleware> _logger;
-
-    public PermissionAuthorizationMiddleware(
-        RequestDelegate next,
-        ILogger<PermissionAuthorizationMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
+    private readonly RequestDelegate _next = next;
+    private readonly ILogger<PermissionAuthorizationMiddleware> _logger = logger;
 
     public async Task InvokeAsync(HttpContext context, IPermissionService permissionService)
     {
@@ -60,7 +54,7 @@ public class PermissionAuthorizationMiddleware
             var hasPermission = await permissionService.UserHasPermissionAsync(userId, path, method);
             if (!hasPermission)
             {
-                _logger.LogWarning($"用户 {userId} 尝试访问未授权资源: {method} {path}");
+                _logger.LogWarning("用户 {UserId} 尝试访问未授权资源: {Method} {Path}", userId, method, path);
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.WriteAsJsonAsync(new { message = "您没有权限执行此操作" });
                 return;
@@ -70,13 +64,13 @@ public class PermissionAuthorizationMiddleware
         }
         catch (AuthorizationException ex)
         {
-            _logger.LogWarning($"权限验证异常: {ex.Message}");
+            _logger.LogWarning(ex, "权限验证异常: {Message}", ex.Message);
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
             await context.Response.WriteAsJsonAsync(new { message = ex.Message });
         }
     }
 
-    private bool ShouldSkipAuthorization(PathString path)
+    private static bool ShouldSkipAuthorization(PathString path)
     {
         // 排除登录、注册等路径
         var excludedPaths = new[]
@@ -88,14 +82,7 @@ public class PermissionAuthorizationMiddleware
             "/health"
         };
 
-        foreach (var excludedPath in excludedPaths)
-        {
-            if (path.StartsWithSegments(excludedPath, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return excludedPaths.Any(excludedPath => 
+            path.StartsWithSegments(excludedPath, StringComparison.OrdinalIgnoreCase));
     }
 }

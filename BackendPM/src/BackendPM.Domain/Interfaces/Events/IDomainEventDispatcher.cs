@@ -10,7 +10,7 @@ public interface IDomainEventDispatcher
     /// </summary>
     /// <param name="event">领域事件</param>
     Task DispatchAsync(IDomainEvent @event);
-    
+
     /// <summary>
     /// 分发多个领域事件
     /// </summary>

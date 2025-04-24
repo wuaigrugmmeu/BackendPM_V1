@@ -8,12 +8,8 @@ namespace BackendPM.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// 角色仓储实现
 /// </summary>
-public class RoleRepository : RepositoryBase<Role>, IRoleRepository
+public class RoleRepository(AppDbContext dbContext) : RepositoryBase<Role>(dbContext), IRoleRepository
 {
-    public RoleRepository(AppDbContext dbContext) : base(dbContext)
-    {
-    }
-
     public async Task<Role?> FindByNameAsync(string name)
     {
         return await _dbContext.Roles
@@ -38,6 +34,17 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
     }
 
     /// <summary>
+    /// 根据ID获取包含权限信息的角色（带取消令牌）
+    /// </summary>
+    public async Task<Role?> GetByIdWithPermissionsAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Roles
+            .Include(r => r.RolePermissions)
+            .ThenInclude(rp => rp.Permission)
+            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
+
+    /// <summary>
     /// 获取所有包含权限信息的角色
     /// </summary>
     public async Task<List<Role>> GetAllWithPermissionsAsync()
@@ -48,19 +55,10 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
             .ToListAsync();
     }
 
-    // 保留带CancellationToken参数的重载方法，以便内部使用
-    public async Task<Role?> GetByIdWithPermissionsAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Roles
-            .Include(r => r.RolePermissions)
-            .ThenInclude(rp => rp.Permission)
-            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
-    }
-
     public async Task<(List<Role> Items, int TotalCount)> GetPagedAsync(
-        int pageIndex, 
-        int pageSize, 
-        string? searchTerm = null, 
+        int pageIndex,
+        int pageSize,
+        string? searchTerm = null,
         CancellationToken cancellationToken = default)
     {
         IQueryable<Role> query = _dbContext.Roles;
@@ -68,9 +66,9 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
         // 应用搜索条件
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(r => 
-                r.Name.Contains(searchTerm) || 
-                r.Code.Contains(searchTerm) || 
+            query = query.Where(r =>
+                r.Name.Contains(searchTerm) ||
+                r.Code.Contains(searchTerm) ||
                 (r.Description != null && r.Description.Contains(searchTerm)));
         }
 
@@ -90,8 +88,8 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
     public async Task<(List<Role> Roles, int TotalCount)> GetPagedListAsync(int pageIndex, int pageSize, string? searchTerm = null)
     {
         // 调用已实现的方法，保持代码一致性
-        var result = await GetPagedAsync(pageIndex, pageSize, searchTerm);
-        return (result.Items, result.TotalCount);
+        var (Items, TotalCount) = await GetPagedAsync(pageIndex, pageSize, searchTerm);
+        return (Items, TotalCount);
     }
 
     public async Task<List<Role>> GetRolesForUserAsync(Guid userId, CancellationToken cancellationToken = default)

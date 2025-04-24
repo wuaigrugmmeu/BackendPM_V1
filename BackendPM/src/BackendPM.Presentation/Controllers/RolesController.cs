@@ -17,14 +17,9 @@ namespace BackendPM.Presentation.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class RolesController : ControllerBase
+public class RolesController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public RolesController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
+    private readonly IMediator _mediator = mediator;
 
     /// <summary>
     /// 获取所有角色
@@ -153,21 +148,21 @@ public class CreateRoleRequest
     /// 角色名称
     /// </summary>
     public string Name { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 角色编码
     /// </summary>
     public string Code { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 角色描述
     /// </summary>
     public string? Description { get; set; }
-    
+
     /// <summary>
     /// 权限ID列表
     /// </summary>
-    public List<Guid> PermissionIds { get; set; } = new List<Guid>();
+    public List<Guid> PermissionIds { get; set; } = [];
 }
 
 /// <summary>
@@ -179,14 +174,14 @@ public class UpdateRoleRequest
     /// 角色名称
     /// </summary>
     public string Name { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 角色描述
     /// </summary>
     public string? Description { get; set; }
-    
+
     /// <summary>
     /// 权限ID列表
     /// </summary>
-    public List<Guid> PermissionIds { get; set; } = new List<Guid>();
+    public List<Guid> PermissionIds { get; set; } = [];
 }

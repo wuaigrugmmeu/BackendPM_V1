@@ -3,14 +3,10 @@ namespace BackendPM.Domain.Exceptions;
 /// <summary>
 /// 认证异常
 /// </summary>
-public class AuthenticationException : DomainException
+/// <remarks>
+/// 构造函数
+/// </remarks>
+/// <param name="message">异常消息</param>
+public class AuthenticationException(string message) : DomainException(message, "AuthenticationFailed")
 {
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    /// <param name="message">异常消息</param>
-    public AuthenticationException(string message) 
-        : base(message, "AuthenticationFailed")
-    {
-    }
 }

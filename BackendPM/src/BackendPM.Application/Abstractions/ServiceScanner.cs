@@ -18,25 +18,25 @@ public static class ServiceScanner
     /// <param name="assemblies">要扫描的程序集集合</param>
     /// <returns>服务集合</returns>
     public static IServiceCollection ScanAndRegisterServices(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         IEnumerable<Assembly> assemblies)
     {
         foreach (var assembly in assemblies)
         {
             var typesWithAttribute = assembly.GetTypes()
-                .Where(type => type.GetCustomAttribute<AutoRegisterAttribute>() != null 
-                            && !type.IsAbstract 
+                .Where(type => type.GetCustomAttribute<AutoRegisterAttribute>() != null
+                            && !type.IsAbstract
                             && !type.IsInterface)
                 .ToList();
-                
+
             foreach (var type in typesWithAttribute)
             {
                 var attribute = type.GetCustomAttribute<AutoRegisterAttribute>();
                 if (attribute == null) continue;
-                
+
                 // 获取服务类型
                 Type serviceType = attribute.ServiceType ?? type;
-                
+
                 // 根据生命周期注册服务
                 switch (attribute.Lifetime)
                 {
@@ -52,10 +52,10 @@ public static class ServiceScanner
                 }
             }
         }
-        
+
         return services;
     }
-    
+
     /// <summary>
     /// 自动注册实现了指定接口的所有服务
     /// </summary>
@@ -70,15 +70,15 @@ public static class ServiceScanner
         ServiceLifetime lifetime = ServiceLifetime.Scoped)
     {
         var interfaceType = typeof(TInterface);
-        
+
         foreach (var assembly in assemblies)
         {
             var implementations = assembly.GetTypes()
-                .Where(type => interfaceType.IsAssignableFrom(type) 
-                            && !type.IsAbstract 
+                .Where(type => interfaceType.IsAssignableFrom(type)
+                            && !type.IsAbstract
                             && !type.IsInterface)
                 .ToList();
-                
+
             foreach (var implementation in implementations)
             {
                 // 根据生命周期注册服务
@@ -96,7 +96,7 @@ public static class ServiceScanner
                 }
             }
         }
-        
+
         return services;
     }
 }

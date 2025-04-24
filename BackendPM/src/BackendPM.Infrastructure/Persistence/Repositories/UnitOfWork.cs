@@ -13,32 +13,22 @@ namespace BackendPM.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// 工作单元实现，用于管理事务和仓储
 /// </summary>
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork(
+    AppDbContext dbContext,
+    IUserRepository userRepository,
+    IRoleRepository roleRepository,
+    IPermissionRepository permissionRepository,
+    IRefreshTokenRepository refreshTokenRepository) : IUnitOfWork
 {
-    private readonly AppDbContext _dbContext;
+    private readonly AppDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     private IDbContextTransaction? _currentTransaction;
-    private readonly Dictionary<Type, object> _repositories;
-    
-    public IUserRepository Users { get; }
-    public IRoleRepository Roles { get; }
-    public IPermissionRepository Permissions { get; }
-    public IRefreshTokenRepository RefreshTokens { get; }
-    
-    public UnitOfWork(
-        AppDbContext dbContext,
-        IUserRepository userRepository,
-        IRoleRepository roleRepository,
-        IPermissionRepository permissionRepository,
-        IRefreshTokenRepository refreshTokenRepository)
-    {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        Users = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-        Roles = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
-        Permissions = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
-        RefreshTokens = refreshTokenRepository ?? throw new ArgumentNullException(nameof(refreshTokenRepository));
-        _repositories = new Dictionary<Type, object>();
-    }
-    
+    private readonly Dictionary<Type, object> _repositories = [];
+
+    public IUserRepository Users { get; } = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+    public IRoleRepository Roles { get; } = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
+    public IPermissionRepository Permissions { get; } = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
+    public IRefreshTokenRepository RefreshTokens { get; } = refreshTokenRepository ?? throw new ArgumentNullException(nameof(refreshTokenRepository));
+
     /// <summary>
     /// 保存所有变更
     /// </summary>
@@ -46,7 +36,7 @@ public class UnitOfWork : IUnitOfWork
     {
         return await _dbContext.SaveChangesAsync(cancellationToken);
     }
-    
+
     /// <summary>
     /// 开始一个事务
     /// </summary>
@@ -59,7 +49,7 @@ public class UnitOfWork : IUnitOfWork
 
         _currentTransaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
     }
-    
+
     /// <summary>
     /// 提交当前事务
     /// </summary>
@@ -68,7 +58,7 @@ public class UnitOfWork : IUnitOfWork
         try
         {
             await _dbContext.SaveChangesAsync(cancellationToken);
-            
+
             if (_currentTransaction != null)
             {
                 await _currentTransaction.CommitAsync(cancellationToken);
@@ -88,7 +78,7 @@ public class UnitOfWork : IUnitOfWork
             }
         }
     }
-    
+
     /// <summary>
     /// 回滚当前事务
     /// </summary>
@@ -101,7 +91,7 @@ public class UnitOfWork : IUnitOfWork
             _currentTransaction = null;
         }
     }
-    
+
     /// <summary>
     /// 释放资源
     /// </summary>
@@ -110,7 +100,7 @@ public class UnitOfWork : IUnitOfWork
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    
+
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)
@@ -129,17 +119,14 @@ public class UnitOfWork : IUnitOfWork
     {
         var type = typeof(TEntity);
 
-        if (!_repositories.ContainsKey(type))
+        if (!_repositories.TryGetValue(type, out object? value))
         {
             var repositoryType = typeof(RepositoryBase<>).MakeGenericType(type);
-            var repository = Activator.CreateInstance(repositoryType, _dbContext);
-            
-            if (repository == null)
-                throw new InvalidOperationException($"无法创建实体 {type.Name} 的仓储");
-                
-            _repositories.Add(type, repository);
+            var repository = Activator.CreateInstance(repositoryType, _dbContext) ?? throw new InvalidOperationException($"无法创建实体 {type.Name} 的仓储");
+            value = repository;
+            _repositories.Add(type, value);
         }
 
-        return (IRepository<TEntity>)_repositories[type];
+        return (IRepository<TEntity>)value;
     }
 }

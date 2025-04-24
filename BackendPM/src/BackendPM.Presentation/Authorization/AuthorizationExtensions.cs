@@ -17,47 +17,48 @@ public static class AuthorizationExtensions
     {
         // 注册授权处理程序
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
-        
+
         // 添加授权服务
-        services.AddAuthorization(options =>
-        {
-            // 1. 添加默认策略，要求用户通过身份验证
-            options.DefaultPolicy = new AuthorizationPolicyBuilder()
+        services.AddAuthorizationBuilder()
+            // 添加授权服务
+                             .SetDefaultPolicy(new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
-                .Build();
-                
-            // 2. 添加角色策略
-            options.AddPolicy("AdminRole", policy => policy.RequireRole("admin"));
-            options.AddPolicy("UserRole", policy => policy.RequireRole("user"));
-            
-            // 3. 添加基本的权限策略
-            // 用户管理权限
-            options.AddPolicy("users.view", policy => 
-                policy.AddRequirements(new PermissionRequirement("users.view")));
-            options.AddPolicy("users.create", policy => 
-                policy.AddRequirements(new PermissionRequirement("users.create")));
-            options.AddPolicy("users.edit", policy => 
-                policy.AddRequirements(new PermissionRequirement("users.edit")));
-            options.AddPolicy("users.delete", policy => 
-                policy.AddRequirements(new PermissionRequirement("users.delete")));
-                
-            // 角色管理权限
-            options.AddPolicy("roles.view", policy => 
-                policy.AddRequirements(new PermissionRequirement("roles.view")));
-            options.AddPolicy("roles.create", policy => 
-                policy.AddRequirements(new PermissionRequirement("roles.create")));
-            options.AddPolicy("roles.edit", policy => 
-                policy.AddRequirements(new PermissionRequirement("roles.edit")));
-            options.AddPolicy("roles.delete", policy => 
-                policy.AddRequirements(new PermissionRequirement("roles.delete")));
-                
-            // 权限管理权限
-            options.AddPolicy("permissions.view", policy => 
-                policy.AddRequirements(new PermissionRequirement("permissions.view")));
-            options.AddPolicy("permissions.assign", policy => 
+                .Build())
+            // 添加授权服务
+                             .AddPolicy("AdminRole", policy => policy.RequireRole("admin"))
+            // 添加授权服务
+                             .AddPolicy("UserRole", policy => policy.RequireRole("user"))
+            // 添加授权服务
+                             .AddPolicy("users.view", policy =>
+                policy.AddRequirements(new PermissionRequirement("users.view")))
+            // 添加授权服务
+                             .AddPolicy("users.create", policy =>
+                policy.AddRequirements(new PermissionRequirement("users.create")))
+            // 添加授权服务
+                             .AddPolicy("users.edit", policy =>
+                policy.AddRequirements(new PermissionRequirement("users.edit")))
+            // 添加授权服务
+                             .AddPolicy("users.delete", policy =>
+                policy.AddRequirements(new PermissionRequirement("users.delete")))
+            // 添加授权服务
+                             .AddPolicy("roles.view", policy =>
+                policy.AddRequirements(new PermissionRequirement("roles.view")))
+            // 添加授权服务
+                             .AddPolicy("roles.create", policy =>
+                policy.AddRequirements(new PermissionRequirement("roles.create")))
+            // 添加授权服务
+                             .AddPolicy("roles.edit", policy =>
+                policy.AddRequirements(new PermissionRequirement("roles.edit")))
+            // 添加授权服务
+                             .AddPolicy("roles.delete", policy =>
+                policy.AddRequirements(new PermissionRequirement("roles.delete")))
+            // 添加授权服务
+                             .AddPolicy("permissions.view", policy =>
+                policy.AddRequirements(new PermissionRequirement("permissions.view")))
+            // 添加授权服务
+                             .AddPolicy("permissions.assign", policy =>
                 policy.AddRequirements(new PermissionRequirement("permissions.assign")));
-        });
-        
+
         return services;
     }
 }

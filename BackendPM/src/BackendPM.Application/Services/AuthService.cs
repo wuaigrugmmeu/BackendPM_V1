@@ -10,19 +10,14 @@ namespace BackendPM.Application.Services;
 /// <summary>
 /// 认证服务实现
 /// </summary>
+/// <remarks>
+/// 构造函数
+/// </remarks>
+/// <param name="logger">日志服务</param>
 [AutoRegister(typeof(IAuthService))]
-public class AuthService : IAuthService
+public class AuthService(ILogger<AuthService> logger) : IAuthService
 {
-    private readonly ILogger<AuthService> _logger;
-
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    /// <param name="logger">日志服务</param>
-    public AuthService(ILogger<AuthService> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<AuthService> _logger = logger;
 
     /// <summary>
     /// 登录并获取令牌
@@ -35,7 +30,7 @@ public class AuthService : IAuthService
 
         // 这里只是一个示例实现，实际应用中需要验证用户凭据
         await Task.Delay(100); // 模拟异步操作
-        
+
         // 返回示例响应
         return new AuthResponseDto
         {
@@ -45,8 +40,8 @@ public class AuthService : IAuthService
             UserId = Guid.NewGuid(),
             Username = loginRequest.Username,
             Email = $"{loginRequest.Username}@example.com",
-            Roles = new List<string> { "User" },
-            Permissions = new List<string> { "read:profile", "update:profile" }
+            Roles = ["User"],
+            Permissions = ["read:profile", "update:profile"]
         };
     }
 
@@ -61,7 +56,7 @@ public class AuthService : IAuthService
 
         // 这里只是一个示例实现，实际应用中需要验证刷新令牌
         await Task.Delay(100); // 模拟异步操作
-        
+
         // 返回示例响应
         return new AuthResponseDto
         {
@@ -71,8 +66,8 @@ public class AuthService : IAuthService
             UserId = Guid.NewGuid(),
             Username = "refreshed_user",
             Email = "refreshed_user@example.com",
-            Roles = new List<string> { "User" },
-            Permissions = new List<string> { "read:profile", "update:profile" }
+            Roles = ["User"],
+            Permissions = ["read:profile", "update:profile"]
         };
     }
 }

@@ -8,18 +8,10 @@ namespace BackendPM.Infrastructure.InfrastructureServices.DomainEvents;
 /// <summary>
 /// 领域事件分发器实现
 /// </summary>
-public class DomainEventDispatcher : IDomainEventDispatcher
+public class DomainEventDispatcher(IMediator mediator, ILogger<DomainEventDispatcher> logger) : IDomainEventDispatcher
 {
-    private readonly IMediator _mediator;
-    private readonly ILogger<DomainEventDispatcher> _logger;
-    
-    private static readonly ConcurrentDictionary<string, Type> _eventTypes = new();
-
-    public DomainEventDispatcher(IMediator mediator, ILogger<DomainEventDispatcher> logger)
-    {
-        _mediator = mediator;
-        _logger = logger;
-    }
+    private readonly IMediator _mediator = mediator;
+    private readonly ILogger<DomainEventDispatcher> _logger = logger;
 
     /// <summary>
     /// 分发单个领域事件
@@ -49,7 +41,7 @@ public class DomainEventDispatcher : IDomainEventDispatcher
     {
         var eventList = events.ToList();
         _logger.LogInformation("正在分发 {Count} 个领域事件", eventList.Count);
-        
+
         foreach (var @event in eventList)
         {
             await DispatchAsync(@event);

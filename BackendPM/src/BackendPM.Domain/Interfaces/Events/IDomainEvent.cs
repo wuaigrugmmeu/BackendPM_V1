@@ -11,7 +11,7 @@ public interface IDomainEvent : INotification
     /// 事件发生时间戳
     /// </summary>
     DateTime OccurredOn { get; }
-    
+
     /// <summary>
     /// 事件唯一标识
     /// </summary>

@@ -12,29 +12,23 @@ namespace BackendPM.Application.Behaviors.Transaction;
 /// </summary>
 /// <typeparam name="TRequest">请求类型，必须是IRequest</typeparam>
 /// <typeparam name="TResponse">响应类型</typeparam>
-public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class TransactionBehavior<TRequest, TResponse>(IUnitOfWork unitOfWork, ILogger<TransactionBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public TransactionBehavior(IUnitOfWork unitOfWork, ILogger<TransactionBehavior<TRequest, TResponse>> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-    }
+    private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task<TResponse> Handle(
-        TRequest request, 
-        RequestHandlerDelegate<TResponse> next, 
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
         // 如果请求不是命令（如查询），则直接执行
         if (IsQuery())
         {
-            return await next();
+            return await next(cancellationToken);
         }
-        
+
         var requestTypeName = request.GetType().Name;
         var requestGuid = Guid.NewGuid().ToString();
 
@@ -44,10 +38,10 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
 
             // 开始事务
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
-            
+
             // 执行请求处理
-            var response = await next();
-            
+            var response = await next(cancellationToken);
+
             // 提交事务
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
 
@@ -57,14 +51,14 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "事务 {TransactionId} 处理 {RequestName} 时出错，正在回滚", 
+            _logger.LogError(ex, "事务 {TransactionId} 处理 {RequestName} 时出错，正在回滚",
                 requestGuid, requestTypeName);
-            
+
             // 回滚事务
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-            
+
             _logger.LogInformation("已回滚事务 {TransactionId} 用于 {RequestName}", requestGuid, requestTypeName);
-            
+
             throw;
         }
     }

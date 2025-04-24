@@ -13,12 +13,12 @@ public abstract class BaseQuery<TResult> : IRequest<TResult>
     /// 查询ID
     /// </summary>
     public Guid QueryId { get; }
-    
+
     /// <summary>
     /// 查询创建时间
     /// </summary>
     public DateTime CreatedAt { get; }
-    
+
     protected BaseQuery()
     {
         QueryId = Guid.NewGuid();

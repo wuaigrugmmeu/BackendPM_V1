@@ -17,14 +17,9 @@ namespace BackendPM.Presentation.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController : ControllerBase
+public class UsersController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public UsersController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
+    private readonly IMediator _mediator = mediator;
 
     /// <summary>
     /// 获取所有用户
@@ -148,17 +143,17 @@ public class CreateUserRequest
     /// 用户名
     /// </summary>
     public string Username { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 电子邮箱
     /// </summary>
     public string Email { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 密码
     /// </summary>
     public string Password { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 全名
     /// </summary>
@@ -174,14 +169,15 @@ public class UpdateUserRequest
     /// 电子邮箱
     /// </summary>
     public string Email { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 全名
     /// </summary>
     public string? FullName { get; set; }
-    
+
     /// <summary>
     /// 是否激活
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Required]
     public bool IsActive { get; set; }
 }

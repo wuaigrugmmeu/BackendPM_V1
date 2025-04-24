@@ -9,22 +9,22 @@ public class UserRole
     /// 用户ID
     /// </summary>
     public Guid UserId { get; private set; }
-    
+
     /// <summary>
     /// 角色ID
     /// </summary>
     public Guid RoleId { get; private set; }
-    
+
     /// <summary>
     /// 关联的用户
     /// </summary>
     public virtual User User { get; private set; }
-    
+
     /// <summary>
     /// 关联的角色
     /// </summary>
     public virtual Role Role { get; private set; }
-    
+
     /// <summary>
     /// 创建时间
     /// </summary>

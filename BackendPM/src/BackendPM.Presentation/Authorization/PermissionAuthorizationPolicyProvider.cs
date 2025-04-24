@@ -6,17 +6,12 @@ namespace BackendPM.Presentation.Authorization;
 /// <summary>
 /// 权限授权策略提供程序
 /// </summary>
-public class PermissionAuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
+/// <remarks>
+/// 构造函数
+/// </remarks>
+public class PermissionAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options) : DefaultAuthorizationPolicyProvider(options)
 {
     private const string PERMISSION_POLICY_PREFIX = "Permission";
-
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    public PermissionAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
-        : base(options)
-    {
-    }
 
     /// <summary>
     /// 获取授权策略
@@ -31,7 +26,7 @@ public class PermissionAuthorizationPolicyProvider : DefaultAuthorizationPolicyP
 
         // 从策略名称提取权限编码
         // 格式：Permission{权限编码}
-        var permissionCode = policyName.Substring(PERMISSION_POLICY_PREFIX.Length);
+        var permissionCode = policyName[PERMISSION_POLICY_PREFIX.Length..];
 
         // 创建只包含单个权限要求的授权策略
         var policy = new AuthorizationPolicyBuilder()

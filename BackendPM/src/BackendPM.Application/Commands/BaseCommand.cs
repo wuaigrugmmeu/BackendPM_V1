@@ -12,12 +12,12 @@ public abstract class BaseCommand : IRequest
     /// 命令ID
     /// </summary>
     public Guid CommandId { get; }
-    
+
     /// <summary>
     /// 命令创建时间
     /// </summary>
     public DateTime CreatedAt { get; }
-    
+
     protected BaseCommand()
     {
         CommandId = Guid.NewGuid();
@@ -35,12 +35,12 @@ public abstract class BaseCommand<TResult> : IRequest<TResult>
     /// 命令ID
     /// </summary>
     public Guid CommandId { get; }
-    
+
     /// <summary>
     /// 命令创建时间
     /// </summary>
     public DateTime CreatedAt { get; }
-    
+
     protected BaseCommand()
     {
         CommandId = Guid.NewGuid();

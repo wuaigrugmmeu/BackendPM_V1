@@ -8,12 +8,8 @@ namespace BackendPM.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// 权限仓储实现
 /// </summary>
-public class PermissionRepository : RepositoryBase<Permission>, IPermissionRepository
+public class PermissionRepository(AppDbContext dbContext) : RepositoryBase<Permission>(dbContext), IPermissionRepository
 {
-    public PermissionRepository(AppDbContext dbContext) : base(dbContext)
-    {
-    }
-
     public async Task<Permission?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Permissions
@@ -57,10 +53,10 @@ public class PermissionRepository : RepositoryBase<Permission>, IPermissionRepos
     }
 
     public async Task<(List<Permission> Items, int TotalCount)> GetPagedAsync(
-        int pageIndex, 
-        int pageSize, 
-        string? searchTerm = null, 
-        string? group = null, 
+        int pageIndex,
+        int pageSize,
+        string? searchTerm = null,
+        string? group = null,
         CancellationToken cancellationToken = default)
     {
         IQueryable<Permission> query = _dbContext.Permissions;
@@ -74,10 +70,10 @@ public class PermissionRepository : RepositoryBase<Permission>, IPermissionRepos
         // 应用搜索条件
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(p => 
-                p.Name.Contains(searchTerm) || 
-                p.Code.Contains(searchTerm) || 
-                p.Group.Contains(searchTerm) || 
+            query = query.Where(p =>
+                p.Name.Contains(searchTerm) ||
+                p.Code.Contains(searchTerm) ||
+                p.Group.Contains(searchTerm) ||
                 (p.Description != null && p.Description.Contains(searchTerm)));
         }
 
@@ -116,7 +112,7 @@ public class PermissionRepository : RepositoryBase<Permission>, IPermissionRepos
     public async Task<(List<Permission> Permissions, int TotalCount)> GetPagedListAsync(int pageIndex, int pageSize, string? searchTerm = null)
     {
         // 调用已实现的方法，保持代码一致性
-        var result = await GetPagedAsync(pageIndex, pageSize, searchTerm);
-        return (result.Items, result.TotalCount);
+        var (Items, TotalCount) = await GetPagedAsync(pageIndex, pageSize, searchTerm);
+        return (Items, TotalCount);
     }
 }

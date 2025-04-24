@@ -16,56 +16,41 @@ namespace BackendPM.Application.Commands.Users;
 /// <summary>
 /// 创建用户命令
 /// </summary>
-public class CreateUserCommand : BaseCommand<UserDto>
+public class CreateUserCommand(string username, string email, string password, string? fullName = null, List<Guid>? roleIds = null) : BaseCommand<UserDto>
 {
     /// <summary>
     /// 用户名
     /// </summary>
-    public string Username { get; }
-    
+    public string Username { get; } = username ?? throw new ArgumentNullException(nameof(username));
+
     /// <summary>
     /// 电子邮箱
     /// </summary>
-    public string Email { get; }
-    
+    public string Email { get; } = email ?? throw new ArgumentNullException(nameof(email));
+
     /// <summary>
     /// 密码
     /// </summary>
-    public string Password { get; }
-    
+    public string Password { get; } = password ?? throw new ArgumentNullException(nameof(password));
+
     /// <summary>
     /// 全名
     /// </summary>
-    public string? FullName { get; }
-    
+    public string? FullName { get; } = fullName;
+
     /// <summary>
     /// 角色ID列表
     /// </summary>
-    public List<Guid>? RoleIds { get; }
-
-    public CreateUserCommand(string username, string email, string password, string? fullName = null, List<Guid>? roleIds = null)
-    {
-        Username = username ?? throw new ArgumentNullException(nameof(username));
-        Email = email ?? throw new ArgumentNullException(nameof(email));
-        Password = password ?? throw new ArgumentNullException(nameof(password));
-        FullName = fullName;
-        RoleIds = roleIds;
-    }
+    public List<Guid>? RoleIds { get; } = roleIds;
 }
 
 /// <summary>
 /// 创建用户命令处理器
 /// </summary>
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserDto>
+public class CreateUserCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateUserCommandHandler> logger) : IRequestHandler<CreateUserCommand, UserDto>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<CreateUserCommandHandler> _logger;
-
-    public CreateUserCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateUserCommandHandler> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-    }
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly ILogger<CreateUserCommandHandler> _logger = logger;
 
     public async Task<UserDto> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
@@ -86,7 +71,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
 
         // 创建新用户
         var user = new User(command.Username, command.Email, passwordHash);
-        
+
         // 如果有全名，则设置
         if (!string.IsNullOrEmpty(command.FullName))
         {
@@ -131,10 +116,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
     /// </summary>
     private static string HashPassword(string password)
     {
-        using (var sha256 = SHA256.Create())
-        {
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
-        }
+        using var sha256 = SHA256.Create();
+        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+        return Convert.ToBase64String(hashedBytes);
     }
 }

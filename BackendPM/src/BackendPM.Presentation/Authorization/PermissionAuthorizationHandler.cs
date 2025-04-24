@@ -5,20 +5,15 @@ namespace BackendPM.Presentation.Authorization;
 /// <summary>
 /// 基于权限的授权处理程序
 /// </summary>
-public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public class PermissionAuthorizationHandler(ILogger<PermissionAuthorizationHandler> logger) : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly ILogger<PermissionAuthorizationHandler> _logger;
-
-    public PermissionAuthorizationHandler(ILogger<PermissionAuthorizationHandler> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<PermissionAuthorizationHandler> _logger = logger;
 
     /// <summary>
     /// 处理授权要求
     /// </summary>
     protected override Task HandleRequirementAsync(
-        AuthorizationHandlerContext context, 
+        AuthorizationHandlerContext context,
         PermissionRequirement requirement)
     {
         // 检查用户是否已认证
@@ -43,8 +38,8 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         else
         {
             _logger.LogWarning(
-                "用户没有所需权限 {PermissionCode}，授权失败。用户拥有的权限: {Permissions}", 
-                requirement.PermissionCode, 
+                "用户没有所需权限 {PermissionCode}，授权失败。用户拥有的权限: {Permissions}",
+                requirement.PermissionCode,
                 string.Join(", ", permissions));
         }
 

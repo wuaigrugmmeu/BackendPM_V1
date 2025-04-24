@@ -15,27 +15,20 @@ namespace BackendPM.Presentation.Middleware;
 /// <summary>
 /// 全局异常处理中间件
 /// </summary>
-public class ExceptionHandlingMiddleware
+/// <remarks>
+/// 构造函数
+/// </remarks>
+/// <param name="next">请求委托</param>
+/// <param name="logger">日志记录器</param>
+/// <param name="environment">环境信息</param>
+public class ExceptionHandlingMiddleware(
+    RequestDelegate next,
+    ILogger<ExceptionHandlingMiddleware> logger,
+    IHostEnvironment environment)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-    private readonly IHostEnvironment _environment;
-
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    /// <param name="next">请求委托</param>
-    /// <param name="logger">日志记录器</param>
-    /// <param name="environment">环境信息</param>
-    public ExceptionHandlingMiddleware(
-        RequestDelegate next,
-        ILogger<ExceptionHandlingMiddleware> logger,
-        IHostEnvironment environment)
-    {
-        _next = next;
-        _logger = logger;
-        _environment = environment;
-    }
+    private readonly RequestDelegate _next = next;
+    private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
+    private readonly IHostEnvironment _environment = environment;
 
     /// <summary>
     /// 中间件执行方法
@@ -68,18 +61,18 @@ public class ExceptionHandlingMiddleware
         // 根据异常类型设置HTTP状态码和错误响应
         var statusCode = GetStatusCode(exception);
         var errorResponse = CreateErrorResponse(exception, context);
-        
+
         // 设置响应格式和状态码
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)statusCode;
-        
+
         // 写入响应内容
         var jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = true
         };
-        
+
         await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse, jsonOptions));
     }
 
@@ -126,17 +119,18 @@ public class ExceptionHandlingMiddleware
             case ValidationException validationException:
                 errorResponse.Code = "ValidationFailed";
                 errorResponse.Message = "请求数据验证失败";
-                errorResponse.ValidationErrors = new Dictionary<string, List<string>>();
-                
+                errorResponse.ValidationErrors = [];
+
                 // 处理验证错误
                 foreach (var error in validationException.Errors)
                 {
-                    if (!errorResponse.ValidationErrors.ContainsKey(error.PropertyName))
+                    if (!errorResponse.ValidationErrors.TryGetValue(error.PropertyName, out List<string>? value))
                     {
-                        errorResponse.ValidationErrors[error.PropertyName] = new List<string>();
+                        value = ([]);
+                        errorResponse.ValidationErrors[error.PropertyName] = value;
                     }
-                    
-                    errorResponse.ValidationErrors[error.PropertyName].Add(error.ErrorMessage);
+
+                    value.Add(error.ErrorMessage);
                 }
                 break;
 

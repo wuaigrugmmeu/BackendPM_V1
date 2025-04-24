@@ -12,7 +12,7 @@ public class LoginRequestDto
     /// </summary>
     [Required(ErrorMessage = "用户名/邮箱不能为空")]
     public string Username { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 密码
     /// </summary>
@@ -29,41 +29,41 @@ public class AuthResponseDto
     /// 访问令牌
     /// </summary>
     public string AccessToken { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 刷新令牌
     /// </summary>
     public string RefreshToken { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 过期时间（UTC时间戳）
     /// </summary>
     public long ExpiresAt { get; set; }
-    
+
     /// <summary>
     /// 用户ID
     /// </summary>
     public Guid UserId { get; set; }
-    
+
     /// <summary>
     /// 用户名
     /// </summary>
     public string Username { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 用户邮箱
     /// </summary>
     public string Email { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 用户角色
     /// </summary>
-    public List<string> Roles { get; set; } = new();
-    
+    public List<string> Roles { get; set; } = [];
+
     /// <summary>
     /// 用户权限
     /// </summary>
-    public List<string> Permissions { get; set; } = new();
+    public List<string> Permissions { get; set; } = [];
 }
 
 /// <summary>
@@ -76,7 +76,7 @@ public class RefreshTokenRequestDto
     /// </summary>
     [Required(ErrorMessage = "访问令牌不能为空")]
     public string AccessToken { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 刷新令牌
     /// </summary>
@@ -94,16 +94,16 @@ public class ChangePasswordRequestDto
     /// </summary>
     [Required(ErrorMessage = "当前密码不能为空")]
     public string CurrentPassword { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 新密码
     /// </summary>
     [Required(ErrorMessage = "新密码不能为空")]
     [MinLength(6, ErrorMessage = "新密码长度不能少于6个字符")]
-    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{6,}$", 
+    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{6,}$",
         ErrorMessage = "新密码必须包含大小写字母、数字和特殊字符")]
     public string NewPassword { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// 确认新密码
     /// </summary>

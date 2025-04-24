@@ -32,7 +32,7 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "基于DDD架构的.NET Core 8后台权限管理系统API"
     });
-    
+
     // 添加JWT认证支持
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -91,19 +91,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "后台权限管理系统 API V1");
-        
+
         // 设置Swagger UI为根路径，使应用启动时直接打开Swagger页面
         options.RoutePrefix = string.Empty;
-        
+
         // 自动展开操作和标签
         options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-        
+
         // 启用筛选
         options.EnableFilter();
-        
+
         // 启用深度链接
         options.EnableDeepLinking();
-        
+
         // 显示请求持续时间
         options.DisplayRequestDuration();
     });
@@ -112,7 +112,7 @@ else
 {
     // 生产环境也需要确保数据库已创建并迁移
     await AppDbInitializer.InitializeDatabaseAsync(app.Services, isProduction: true);
-    
+
     // 生产环境默认使用ASP.NET Core的内置异常处理页面
     app.UseExceptionHandler("/Error");
     app.UseHsts();
@@ -144,4 +144,5 @@ app.MapGet("/", () => Results.Redirect("/index.html"));
 // 映射控制器路由
 app.MapControllers();
 
-app.Run();
+// 使用异步方式运行应用程序
+await app.RunAsync();

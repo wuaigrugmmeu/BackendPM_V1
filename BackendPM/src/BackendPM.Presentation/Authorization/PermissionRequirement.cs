@@ -5,19 +5,14 @@ namespace BackendPM.Presentation.Authorization;
 /// <summary>
 /// 基于权限的授权要求
 /// </summary>
-public class PermissionRequirement : IAuthorizationRequirement
+/// <remarks>
+/// 创建权限授权要求
+/// </remarks>
+/// <param name="permissionCode">权限编码</param>
+public class PermissionRequirement(string permissionCode) : IAuthorizationRequirement
 {
     /// <summary>
     /// 权限编码
     /// </summary>
-    public string PermissionCode { get; }
-    
-    /// <summary>
-    /// 创建权限授权要求
-    /// </summary>
-    /// <param name="permissionCode">权限编码</param>
-    public PermissionRequirement(string permissionCode)
-    {
-        PermissionCode = permissionCode ?? throw new ArgumentNullException(nameof(permissionCode));
-    }
+    public string PermissionCode { get; } = permissionCode ?? throw new ArgumentNullException(nameof(permissionCode));
 }

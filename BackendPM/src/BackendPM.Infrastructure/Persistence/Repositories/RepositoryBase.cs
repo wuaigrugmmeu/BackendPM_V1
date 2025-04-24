@@ -77,7 +77,7 @@ public class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : clas
         {
             return await _dbSet.CountAsync();
         }
-        
+
         return await _dbSet.CountAsync(predicate);
     }
 

@@ -17,24 +17,16 @@ namespace BackendPM.Presentation.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController(
+    IUnitOfWork unitOfWork,
+    IJwtTokenService jwtTokenService,
+    IOptions<JwtSettings> jwtSettings,
+    ILogger<AuthController> logger) : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IJwtTokenService _jwtTokenService;
-    private readonly JwtSettings _jwtSettings;
-    private readonly ILogger<AuthController> _logger;
-
-    public AuthController(
-        IUnitOfWork unitOfWork,
-        IJwtTokenService jwtTokenService,
-        IOptions<JwtSettings> jwtSettings,
-        ILogger<AuthController> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _jwtTokenService = jwtTokenService;
-        _jwtSettings = jwtSettings.Value;
-        _logger = logger;
-    }
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
+    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+    private readonly ILogger<AuthController> _logger = logger;
 
     /// <summary>
     /// 用户登录
@@ -61,13 +53,13 @@ public class AuthController : ControllerBase
 
             // 获取用户角色和权限
             user = await _unitOfWork.Users.GetUserWithRolesAndPermissionsAsync(user.Id);
-            
+
             // 确保用户及其角色不为空
             if (user == null || user.UserRoles == null)
             {
                 return Unauthorized(new { message = "获取用户权限失败" });
             }
-            
+
             // 提取用户权限
             var permissions = user.UserRoles
                 .SelectMany(ur => ur.Role.RolePermissions.Select(rp => rp.Permission.Code))
@@ -76,15 +68,15 @@ public class AuthController : ControllerBase
 
             // 生成访问令牌
             var accessToken = _jwtTokenService.GenerateAccessToken(user, permissions);
-            
+
             // 生成刷新令牌
             var refreshToken = _jwtTokenService.GenerateRefreshToken();
             var refreshTokenExpiry = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryInDays);
-            
+
             // 保存刷新令牌到数据库
             var refreshTokenEntity = new RefreshToken(user.Id, refreshToken, refreshTokenExpiry);
             await _unitOfWork.RefreshTokens.AddAsync(refreshTokenEntity);
-            
+
             // 清理该用户过期的刷新令牌，仅保留最近5个有效的令牌
             var userTokens = await _unitOfWork.RefreshTokens.GetAllByUserIdAsync(user.Id);
             var tokensToRemove = userTokens
@@ -99,7 +91,7 @@ public class AuthController : ControllerBase
                     .OrderByDescending(rt => rt.CreatedAt)
                     .Skip(5)
                     .ToList();
-                
+
                 tokensToRemove.AddRange(validTokens);
             }
 
@@ -158,8 +150,8 @@ public class AuthController : ControllerBase
 
             // 验证刷新令牌
             var storedRefreshToken = await _unitOfWork.RefreshTokens.GetByTokenAsync(request.RefreshToken);
-            if (storedRefreshToken == null || 
-                storedRefreshToken.UserId != userId || 
+            if (storedRefreshToken == null ||
+                storedRefreshToken.UserId != userId ||
                 !storedRefreshToken.IsActive)
             {
                 return BadRequest(new { message = "无效的刷新令牌" });
@@ -383,10 +375,7 @@ public class AuthController : ControllerBase
     /// </summary>
     private static string HashPassword(string password)
     {
-        using (var sha256 = SHA256.Create())
-        {
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
-        }
+        var hashedBytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
+        return Convert.ToBase64String(hashedBytes);
     }
 }

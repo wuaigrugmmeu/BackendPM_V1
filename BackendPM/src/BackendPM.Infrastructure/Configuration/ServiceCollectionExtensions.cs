@@ -45,15 +45,15 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        
+
         // 注册权限服务
         services.AddMemoryCache(); // 确保内存缓存服务可用
         services.AddScoped<IPermissionService, PermissionService>();
-        
+
         // 注册JWT服务
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
         services.AddScoped<IJwtTokenService, JwtTokenService>();
-        
+
         // 添加JWT认证
         services.AddAuthentication(options =>
         {
@@ -71,7 +71,7 @@ public static class ServiceCollectionExtensions
                 ValidIssuer = configuration["JwtSettings:Issuer"],
                 ValidAudience = configuration["JwtSettings:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"] ?? 
+                    Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"] ??
                         throw new InvalidOperationException("JWT Secret Key is not configured"))),
                 ClockSkew = TimeSpan.Zero
             };

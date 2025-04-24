@@ -19,19 +19,14 @@ public class GetAllRolesQuery : BaseQuery<List<RoleDto>>
 /// <summary>
 /// 获取所有角色查询处理器
 /// </summary>
-public class GetAllRolesQueryHandler : IRequestHandler<GetAllRolesQuery, List<RoleDto>>
+public class GetAllRolesQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetAllRolesQuery, List<RoleDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    
-    public GetAllRolesQueryHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-    
-    public async Task<List<RoleDto>> Handle(GetAllRolesQuery query, CancellationToken cancellationToken = default)
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+
+    public async Task<List<RoleDto>> Handle(GetAllRolesQuery query, CancellationToken cancellationToken)
     {
         var roles = await _unitOfWork.Roles.GetAllWithPermissionsAsync();
-        
+
         return roles.Select(role => new RoleDto
         {
             Id = role.Id,

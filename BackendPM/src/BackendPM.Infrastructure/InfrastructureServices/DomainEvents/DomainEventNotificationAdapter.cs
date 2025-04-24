@@ -11,16 +11,10 @@ namespace BackendPM.Infrastructure.InfrastructureServices.DomainEvents;
 /// <summary>
 /// 领域事件通知适配器 - 将领域事件转换为中介者通知
 /// </summary>
-public class DomainEventNotificationAdapter : IDomainEventDispatcher
+public class DomainEventNotificationAdapter(IMediator mediator, ILogger<DomainEventNotificationAdapter> logger) : IDomainEventDispatcher
 {
-    private readonly IMediator _mediator;
-    private readonly ILogger<DomainEventNotificationAdapter> _logger;
-
-    public DomainEventNotificationAdapter(IMediator mediator, ILogger<DomainEventNotificationAdapter> logger)
-    {
-        _mediator = mediator;
-        _logger = logger;
-    }
+    private readonly IMediator _mediator = mediator;
+    private readonly ILogger<DomainEventNotificationAdapter> _logger = logger;
 
     /// <summary>
     /// 分发单个领域事件
@@ -50,7 +44,7 @@ public class DomainEventNotificationAdapter : IDomainEventDispatcher
     {
         var eventList = events.ToList();
         _logger.LogInformation("通过中介者分发 {Count} 个领域事件", eventList.Count);
-        
+
         foreach (var @event in eventList)
         {
             await DispatchAsync(@event);

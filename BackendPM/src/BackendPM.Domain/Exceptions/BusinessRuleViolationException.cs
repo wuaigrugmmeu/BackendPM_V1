@@ -9,17 +9,17 @@ public class BusinessRuleViolationException : DomainException
     /// 构造函数
     /// </summary>
     /// <param name="message">异常消息</param>
-    public BusinessRuleViolationException(string message) 
+    public BusinessRuleViolationException(string message)
         : base(message, "BusinessRuleViolation")
     {
     }
-    
+
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="message">异常消息</param>
     /// <param name="specificCode">特定的错误代码</param>
-    public BusinessRuleViolationException(string message, string specificCode) 
+    public BusinessRuleViolationException(string message, string specificCode)
         : base(message, specificCode)
     {
     }

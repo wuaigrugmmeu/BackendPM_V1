@@ -18,12 +18,6 @@ public class UserModuleRegistration : IModuleRegistration
     /// </summary>
     public void RegisterModule(IServiceCollection services)
     {
-        // 这里可以注册特定于用户模块的服务
-        // 例如: 特殊的用户服务、用户相关的仓储实现等
-        
-        // 示例: 如果有用户特定的服务
-        // services.AddScoped<IUserSpecificService, UserSpecificService>();
-        
         // 注意: 基础服务如MediatR处理器、验证器等由框架统一注册
         // 这里只需注册模块特有的服务
     }

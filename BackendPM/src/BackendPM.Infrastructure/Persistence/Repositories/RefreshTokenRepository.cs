@@ -8,11 +8,8 @@ namespace BackendPM.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// 刷新令牌仓储实现
 /// </summary>
-public class RefreshTokenRepository : RepositoryBase<RefreshToken>, IRefreshTokenRepository
+public class RefreshTokenRepository(AppDbContext dbContext) : RepositoryBase<RefreshToken>(dbContext), IRefreshTokenRepository
 {
-    public RefreshTokenRepository(AppDbContext dbContext) : base(dbContext)
-    {
-    }
 
     /// <summary>
     /// 根据令牌值查找刷新令牌
@@ -114,7 +111,7 @@ public class RefreshTokenRepository : RepositoryBase<RefreshToken>, IRefreshToke
         var expiredTokens = await _dbContext.RefreshTokens
             .Where(rt => rt.IsUsed || rt.IsRevoked || rt.ExpiryTime <= DateTime.UtcNow)
             .ToListAsync();
-        
+
         if (expiredTokens.Any())
         {
             _dbContext.RefreshTokens.RemoveRange(expiredTokens);
@@ -131,13 +128,13 @@ public class RefreshTokenRepository : RepositoryBase<RefreshToken>, IRefreshToke
         var expiredTokens = await _dbContext.RefreshTokens
             .Where(rt => rt.IsUsed || rt.IsRevoked || rt.ExpiryTime <= DateTime.UtcNow)
             .ToListAsync(cancellationToken);
-        
+
         if (expiredTokens.Any())
         {
             _dbContext.RefreshTokens.RemoveRange(expiredTokens);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
-        
+
         return expiredTokens.Count;
     }
 }

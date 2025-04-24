@@ -14,12 +14,12 @@ public abstract class DomainEvent : IDomainEvent
     /// 事件ID
     /// </summary>
     public Guid EventId { get; }
-    
+
     /// <summary>
     /// 事件发生时间
     /// </summary>
     public DateTime OccurredOn { get; }
-    
+
     protected DomainEvent()
     {
         EventId = Guid.NewGuid();

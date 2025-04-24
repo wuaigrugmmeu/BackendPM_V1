@@ -7,20 +7,20 @@ namespace BackendPM.Domain.Entities;
 /// <summary>
 /// 实体基类，所有实体都应该继承此类
 /// </summary>
-public abstract class EntityBase: IAggregateRoot
+public abstract class EntityBase : IAggregateRoot
 {
-    private readonly List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
-    
+    private readonly List<IDomainEvent> _domainEvents = [];
+
     /// <summary>
     /// 实体唯一标识
     /// </summary>
     public Guid Id { get; protected set; }
-    
+
     /// <summary>
     /// 创建时间
     /// </summary>
     public DateTime CreatedAt { get; protected set; }
-    
+
     /// <summary>
     /// 最后修改时间
     /// </summary>
@@ -36,7 +36,7 @@ public abstract class EntityBase: IAggregateRoot
         Id = Guid.NewGuid();
         CreatedAt = DateTime.UtcNow;
     }
-    
+
     /// <summary>
     /// 更新实体的最后修改时间
     /// </summary>
@@ -44,7 +44,7 @@ public abstract class EntityBase: IAggregateRoot
     {
         LastModifiedAt = DateTime.UtcNow;
     }
-    
+
     /// <summary>
     /// 检查实体是否相等（基于Id）
     /// </summary>

@@ -19,19 +19,14 @@ public class GetAllUsersQuery : BaseQuery<List<UserDto>>
 /// <summary>
 /// 获取所有用户查询处理器
 /// </summary>
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<UserDto>>
+public class GetAllUsersQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetAllUsersQuery, List<UserDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    
-    public GetAllUsersQueryHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-    
-    public async Task<List<UserDto>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken = default)
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+
+    public async Task<List<UserDto>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken)
     {
         var users = await _unitOfWork.Users.GetAllWithRolesAsync();
-        
+
         return users.Select(user => new UserDto
         {
             Id = user.Id,

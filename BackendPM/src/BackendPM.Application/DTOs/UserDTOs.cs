@@ -11,41 +11,41 @@ public class UserDto
     /// 用户ID
     /// </summary>
     public Guid Id { get; set; }
-    
+
     /// <summary>
     /// 用户名
     /// </summary>
     public string Username { get; set; } = null!;
-    
+
     /// <summary>
     /// 电子邮件
     /// </summary>
     public string Email { get; set; } = null!;
-    
+
     /// <summary>
     /// 全名
     /// </summary>
     public string? FullName { get; set; }
-    
+
     /// <summary>
     /// 是否活跃
     /// </summary>
     public bool IsActive { get; set; }
-    
+
     /// <summary>
     /// 创建时间
     /// </summary>
     public DateTime CreatedAt { get; set; }
-    
+
     /// <summary>
     /// 最后更新时间
     /// </summary>
     public DateTime? LastModifiedAt { get; set; }
-    
+
     /// <summary>
     /// 用户角色
     /// </summary>
-    public List<string> Roles { get; set; } = new();
+    public List<string> Roles { get; set; } = [];
 }
 
 /// <summary>
@@ -59,27 +59,27 @@ public class CreateUserDto
     [Required(ErrorMessage = "用户名是必填项")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "用户名长度必须在3-50个字符之间")]
     public string Username { get; set; } = null!;
-    
+
     /// <summary>
     /// 电子邮件
     /// </summary>
     [Required(ErrorMessage = "电子邮件是必填项")]
     [EmailAddress(ErrorMessage = "电子邮件格式不正确")]
     public string Email { get; set; } = null!;
-    
+
     /// <summary>
     /// 密码
     /// </summary>
     [Required(ErrorMessage = "密码是必填项")]
     [StringLength(100, MinimumLength = 6, ErrorMessage = "密码长度必须在6-100个字符之间")]
     public string Password { get; set; } = null!;
-    
+
     /// <summary>
     /// 全名
     /// </summary>
     [StringLength(100, ErrorMessage = "全名长度不能超过100个字符")]
     public string? FullName { get; set; }
-    
+
     /// <summary>
     /// 角色ID列表
     /// </summary>
@@ -96,13 +96,13 @@ public class UpdateUserDto
     /// </summary>
     [EmailAddress(ErrorMessage = "电子邮件格式不正确")]
     public string? Email { get; set; }
-    
+
     /// <summary>
     /// 全名
     /// </summary>
     [StringLength(100, ErrorMessage = "全名长度不能超过100个字符")]
     public string? FullName { get; set; }
-    
+
     /// <summary>
     /// 是否活跃
     /// </summary>
@@ -119,14 +119,14 @@ public class ChangePasswordDto
     /// </summary>
     [Required(ErrorMessage = "当前密码是必填项")]
     public string CurrentPassword { get; set; } = null!;
-    
+
     /// <summary>
     /// 新密码
     /// </summary>
     [Required(ErrorMessage = "新密码是必填项")]
     [StringLength(100, MinimumLength = 6, ErrorMessage = "密码长度必须在6-100个字符之间")]
     public string NewPassword { get; set; } = null!;
-    
+
     /// <summary>
     /// 确认新密码
     /// </summary>
@@ -144,12 +144,12 @@ public class UserQueryParams
     /// 页码，从1开始
     /// </summary>
     public int PageIndex { get; set; } = 1;
-    
+
     /// <summary>
     /// 每页记录数
     /// </summary>
     public int PageSize { get; set; } = 10;
-    
+
     /// <summary>
     /// 搜索关键词
     /// </summary>
@@ -166,34 +166,34 @@ public class PagedResult<T>
     /// 当前页码
     /// </summary>
     public int PageIndex { get; set; }
-    
+
     /// <summary>
     /// 每页记录数
     /// </summary>
     public int PageSize { get; set; }
-    
+
     /// <summary>
     /// 总记录数
     /// </summary>
     public int TotalCount { get; set; }
-    
+
     /// <summary>
     /// 总页数
     /// </summary>
     public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
-    
+
     /// <summary>
     /// 是否有上一页
     /// </summary>
     public bool HasPreviousPage => PageIndex > 1;
-    
+
     /// <summary>
     /// 是否有下一页
     /// </summary>
     public bool HasNextPage => PageIndex < TotalPages;
-    
+
     /// <summary>
     /// 数据列表
     /// </summary>
-    public List<T> Items { get; set; } = new();
+    public List<T> Items { get; set; } = [];
 }

@@ -14,9 +14,9 @@ public class UserProfile : Profile
     {
         // 实体到DTO的映射
         CreateMap<User, UserDto>()
-            .ForMember(dest => dest.Roles, 
+            .ForMember(dest => dest.Roles,
                 opt => opt.MapFrom(src => src.UserRoles.Select(ur => ur.Role.Name)));
-        
+
         // DTO到命令的映射
         CreateMap<CreateUserDto, CreateUserCommand>();
         CreateMap<UpdateUserDto, UpdateUserCommand>();

@@ -8,8 +8,8 @@ namespace BackendPM.Domain.Entities;
 /// </summary>
 public abstract class AggregateRoot : EntityBase, IAggregateRoot
 {
-    private readonly List<IDomainEvent> _domainEvents = new();
-    
+    private readonly List<IDomainEvent> _domainEvents = [];
+
     /// <summary>
     /// 获取未处理的领域事件
     /// </summary>

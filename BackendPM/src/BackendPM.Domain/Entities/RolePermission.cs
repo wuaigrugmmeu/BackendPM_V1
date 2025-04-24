@@ -9,22 +9,22 @@ public class RolePermission
     /// 角色ID
     /// </summary>
     public Guid RoleId { get; private set; }
-    
+
     /// <summary>
     /// 权限ID
     /// </summary>
     public Guid PermissionId { get; private set; }
-    
+
     /// <summary>
     /// 关联的角色
     /// </summary>
     public virtual Role Role { get; private set; }
-    
+
     /// <summary>
     /// 关联的权限
     /// </summary>
     public virtual Permission Permission { get; private set; }
-    
+
     /// <summary>
     /// 创建时间
     /// </summary>

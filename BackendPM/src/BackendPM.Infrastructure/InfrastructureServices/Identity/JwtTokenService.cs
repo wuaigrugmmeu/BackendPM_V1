@@ -21,20 +21,20 @@ public interface IJwtTokenService
     /// <param name="permissions">用户权限列表</param>
     /// <returns>JWT令牌</returns>
     string GenerateAccessToken(User user, IEnumerable<string> permissions);
-    
+
     /// <summary>
     /// 生成刷新令牌
     /// </summary>
     /// <returns>刷新令牌</returns>
     string GenerateRefreshToken();
-    
+
     /// <summary>
     /// 从令牌中获取用户ID
     /// </summary>
     /// <param name="token">JWT令牌</param>
     /// <returns>用户ID</returns>
     Guid? GetUserIdFromToken(string token);
-    
+
     /// <summary>
     /// 验证令牌
     /// </summary>
@@ -46,16 +46,10 @@ public interface IJwtTokenService
 /// <summary>
 /// JWT令牌服务实现
 /// </summary>
-public class JwtTokenService : IJwtTokenService
+public class JwtTokenService(IOptions<JwtSettings> jwtSettings, ILogger<JwtTokenService> logger) : IJwtTokenService
 {
-    private readonly JwtSettings _jwtSettings;
-    private readonly ILogger<JwtTokenService> _logger;
-
-    public JwtTokenService(IOptions<JwtSettings> jwtSettings, ILogger<JwtTokenService> logger)
-    {
-        _jwtSettings = jwtSettings.Value;
-        _logger = logger;
-    }
+    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+    private readonly ILogger<JwtTokenService> _logger = logger;
 
     /// <summary>
     /// 生成访问令牌
@@ -66,29 +60,29 @@ public class JwtTokenService : IJwtTokenService
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            
+
             // 创建身份声明
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("userId", user.Id.ToString()),
-                new Claim("username", user.Username)
+                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new(JwtRegisteredClaimNames.Email, user.Email),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new("userId", user.Id.ToString()),
+                new("username", user.Username)
             };
-            
+
             // 添加角色声明
             foreach (var role in user.UserRoles.Select(ur => ur.Role.Name))
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
-            
+
             // 添加权限声明
             foreach (var permission in permissions)
             {
                 claims.Add(new Claim("permission", permission));
             }
-            
+
             // 创建JWT令牌
             var token = new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
@@ -97,7 +91,7 @@ public class JwtTokenService : IJwtTokenService
                 expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryInMinutes),
                 signingCredentials: credentials
             );
-            
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         catch (Exception ex)
@@ -125,12 +119,12 @@ public class JwtTokenService : IJwtTokenService
     {
         if (string.IsNullOrEmpty(token))
             return false;
-            
+
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
-            
+
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -141,9 +135,9 @@ public class JwtTokenService : IJwtTokenService
                 ValidAudience = _jwtSettings.Audience,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
-            
-            return validatedToken != null;
+            }, out _);  // 使用弃元，不保存未使用的变量
+
+            return true;
         }
         catch (Exception ex)
         {
@@ -159,12 +153,12 @@ public class JwtTokenService : IJwtTokenService
     {
         if (string.IsNullOrEmpty(token))
             return null;
-            
+
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
-            
+
             // 仅验证签名，不验证过期时间
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -177,15 +171,15 @@ public class JwtTokenService : IJwtTokenService
                 ValidateLifetime = false, // 刷新令牌时不验证访问令牌的过期时间
                 ClockSkew = TimeSpan.Zero
             };
-            
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out _);
             var userIdClaim = principal.FindFirst("userId")?.Value;
-            
+
             if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out var userId))
             {
                 return userId;
             }
-            
+
             return null;
         }
         catch (Exception ex)

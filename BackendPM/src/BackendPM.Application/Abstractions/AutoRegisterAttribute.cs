@@ -13,19 +13,19 @@ public class AutoRegisterAttribute : Attribute
     /// 服务生命周期
     /// </summary>
     public ServiceLifetime Lifetime { get; }
-    
+
     /// <summary>
     /// 服务接口类型，如果为null则使用实现类注册自身
     /// </summary>
     public Type? ServiceType { get; }
-    
+
     /// <summary>
     /// 创建自动注册特性，使用Scoped生命周期
     /// </summary>
     public AutoRegisterAttribute() : this(ServiceLifetime.Scoped)
     {
     }
-    
+
     /// <summary>
     /// 创建自动注册特性，指定生命周期
     /// </summary>
@@ -35,7 +35,7 @@ public class AutoRegisterAttribute : Attribute
         Lifetime = lifetime;
         ServiceType = null;
     }
-    
+
     /// <summary>
     /// 创建自动注册特性，指定服务接口类型和生命周期
     /// </summary>

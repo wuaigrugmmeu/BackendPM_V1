@@ -9,31 +9,33 @@ namespace BackendPM.Infrastructure.Persistence.DbContexts;
 /// <summary>
 /// 应用程序数据库上下文
 /// </summary>
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options,
+                  IDomainEventDispatcher? domainEventDispatcher = null,
+                  ILogger<AppDbContext>? logger = null) : DbContext(options)
 {
-    private readonly IDomainEventDispatcher? _domainEventDispatcher;
-    private readonly ILogger<AppDbContext>? _logger;
+    private readonly IDomainEventDispatcher? _domainEventDispatcher = domainEventDispatcher;
+    private readonly ILogger<AppDbContext>? _logger = logger;
 
     /// <summary>
     /// 用户表
     /// </summary>
     public DbSet<User> Users { get; set; } = null!;
-    
+
     /// <summary>
     /// 角色表
     /// </summary>
     public DbSet<Role> Roles { get; set; } = null!;
-    
+
     /// <summary>
     /// 权限表
     /// </summary>
     public DbSet<Permission> Permissions { get; set; } = null!;
-    
+
     /// <summary>
     /// 用户角色关联表
     /// </summary>
     public DbSet<UserRole> UserRoles { get; set; } = null!;
-    
+
     /// <summary>
     /// 角色权限关联表
     /// </summary>
@@ -44,19 +46,10 @@ public class AppDbContext : DbContext
     /// </summary>
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
-    public AppDbContext(DbContextOptions<AppDbContext> options,
-                      IDomainEventDispatcher? domainEventDispatcher = null,
-                      ILogger<AppDbContext>? logger = null) 
-        : base(options)
-    {
-        _domainEventDispatcher = domainEventDispatcher;
-        _logger = logger;
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         // 配置用户实体
         modelBuilder.Entity<User>(entity =>
         {
@@ -67,12 +60,12 @@ public class AppDbContext : DbContext
             entity.Property(e => e.PasswordHash).IsRequired();
             entity.Property(e => e.FullName).HasMaxLength(100);
             entity.Property(e => e.IsActive).IsRequired();
-            
+
             // 确保用户名和邮箱唯一
             entity.HasIndex(e => e.Username).IsUnique();
             entity.HasIndex(e => e.Email).IsUnique();
         });
-        
+
         // 配置角色实体
         modelBuilder.Entity<Role>(entity =>
         {
@@ -81,11 +74,11 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(200);
-            
+
             // 确保角色编码唯一
             entity.HasIndex(e => e.Code).IsUnique();
         });
-        
+
         // 配置权限实体
         modelBuilder.Entity<Permission>(entity =>
         {
@@ -95,42 +88,42 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Code).HasMaxLength(100).IsRequired();
             entity.Property(e => e.Group).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(200);
-            
+
             // 确保权限编码唯一
             entity.HasIndex(e => e.Code).IsUnique();
         });
-        
+
         // 配置用户角色关联
         modelBuilder.Entity<UserRole>(entity =>
         {
             entity.ToTable("UserRoles");
             entity.HasKey(e => new { e.UserId, e.RoleId });
-            
+
             // 配置与User的关系
             entity.HasOne(ur => ur.User)
                 .WithMany(u => u.UserRoles)
                 .HasForeignKey(ur => ur.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-                
+
             // 配置与Role的关系
             entity.HasOne(ur => ur.Role)
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         // 配置角色权限关联
         modelBuilder.Entity<RolePermission>(entity =>
         {
             entity.ToTable("RolePermissions");
             entity.HasKey(e => new { e.RoleId, e.PermissionId });
-            
+
             // 配置与Role的关系
             entity.HasOne(rp => rp.Role)
                 .WithMany(r => r.RolePermissions)
                 .HasForeignKey(rp => rp.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
-                
+
             // 配置与Permission的关系
             entity.HasOne(rp => rp.Permission)
                 .WithMany(p => p.RolePermissions)
@@ -144,7 +137,7 @@ public class AppDbContext : DbContext
             entity.ToTable("RefreshTokens");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Token).IsRequired();
-            
+
             // 配置与User的关系
             entity.HasOne(rt => rt.User)
                 .WithMany()
@@ -152,7 +145,7 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
-    
+
     /// <summary>
     /// 在保存更改前自动填充实体的创建和修改时间，并处理领域事件
     /// </summary>
@@ -166,16 +159,16 @@ public class AppDbContext : DbContext
                 case EntityState.Modified:
                     entry.Entity.UpdateModificationTime();
                     break;
-                    
+
                 case EntityState.Added:
                     // CreatedAt已在实体构造函数中设置
                     break;
             }
         }
-        
+
         // 先保存所有更改
         var result = await base.SaveChangesAsync(cancellationToken);
-        
+
         // 收集并处理所有领域事件
         if (_domainEventDispatcher != null)
         {
@@ -183,29 +176,29 @@ public class AppDbContext : DbContext
                 .Select(e => e.Entity)
                 .Where(e => e.DomainEvents.Any())
                 .ToList();
-                
+
             if (aggregateRoots.Any())
             {
                 _logger?.LogInformation("发现 {Count} 个聚合根有待处理的领域事件", aggregateRoots.Count);
-                
+
                 foreach (var aggregateRoot in aggregateRoots)
                 {
                     var domainEvents = aggregateRoot.DomainEvents.ToList();
                     aggregateRoot.ClearDomainEvents();
-                    
+
                     if (domainEvents.Any())
                     {
-                        _logger?.LogInformation("正在分发实体 {EntityType} (ID: {EntityId}) 的 {Count} 个领域事件", 
-                            aggregateRoot.GetType().Name, 
-                            (aggregateRoot as EntityBase)?.Id, 
+                        _logger?.LogInformation("正在分发实体 {EntityType} (ID: {EntityId}) 的 {Count} 个领域事件",
+                            aggregateRoot.GetType().Name,
+                            (aggregateRoot as EntityBase)?.Id,
                             domainEvents.Count);
-                            
+
                         await _domainEventDispatcher.DispatchAsync(domainEvents);
                     }
                 }
             }
         }
-        
+
         return result;
     }
 }

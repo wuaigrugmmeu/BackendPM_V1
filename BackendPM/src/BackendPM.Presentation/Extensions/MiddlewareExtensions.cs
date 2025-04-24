@@ -27,7 +27,7 @@ public static class MiddlewareExtensions
     {
         return app.UseMiddleware<RequestTimingMiddleware>();
     }
-    
+
     /// <summary>
     /// 使用权限验证中间件
     /// </summary>

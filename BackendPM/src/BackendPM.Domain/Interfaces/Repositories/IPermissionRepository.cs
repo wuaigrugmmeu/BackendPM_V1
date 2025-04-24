@@ -13,21 +13,21 @@ public interface IPermissionRepository : IRepository<Permission>
     /// <param name="code">权限代码</param>
     /// <returns>权限对象</returns>
     Task<Permission?> FindByCodeAsync(string code);
-    
+
     /// <summary>
     /// 获取角色下的所有权限
     /// </summary>
     /// <param name="roleId">角色ID</param>
     /// <returns>权限列表</returns>
     Task<List<Permission>> GetRolePermissionsAsync(Guid roleId);
-    
+
     /// <summary>
     /// 获取用户的所有权限（通过用户角色）
     /// </summary>
     /// <param name="userId">用户ID</param>
     /// <returns>权限列表</returns>
     Task<List<Permission>> GetUserPermissionsAsync(Guid userId);
-    
+
     /// <summary>
     /// 获取分页的权限列表
     /// </summary>
