@@ -59,7 +59,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
         _logger = logger;
     }
     
-    public async Task<UserDto> Handle(UpdateUserCommand command, CancellationToken cancellationToken = default)
+    public async Task<UserDto> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
     {
         // 获取用户
         var user = await _unitOfWork.Users.GetByIdWithRolesAsync(command.UserId)

@@ -39,7 +39,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
         _logger = logger;
     }
     
-    public async Task Handle(DeleteUserCommand command, CancellationToken cancellationToken = default)
+    public async Task Handle(DeleteUserCommand command, CancellationToken cancellationToken)
     {
         var user = await _unitOfWork.Users.GetByIdAsync(command.UserId)
             ?? throw new EntityNotFoundException(ErrorMessages.EntityNames.UserType, command.UserId);

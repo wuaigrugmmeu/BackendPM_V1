@@ -38,7 +38,7 @@ public class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, RoleDto
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<RoleDto> Handle(GetRoleByIdQuery query, CancellationToken cancellationToken = default)
+    public async Task<RoleDto> Handle(GetRoleByIdQuery query, CancellationToken cancellationToken)
     {
         var role = await _unitOfWork.Roles.GetByIdWithPermissionsAsync(query.RoleId)
             ?? throw new EntityNotFoundException(ErrorMessages.EntityNames.RoleType, query.RoleId);

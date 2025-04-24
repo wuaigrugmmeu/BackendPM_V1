@@ -38,7 +38,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<UserDto> Handle(GetUserByIdQuery query, CancellationToken cancellationToken = default)
+    public async Task<UserDto> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
     {
         var user = await _unitOfWork.Users.GetByIdWithRolesAsync(query.UserId)
             ?? throw new EntityNotFoundException(ErrorMessages.EntityNames.UserType, query.UserId);

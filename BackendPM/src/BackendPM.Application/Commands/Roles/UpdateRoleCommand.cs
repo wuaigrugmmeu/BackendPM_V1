@@ -60,7 +60,7 @@ public class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, RoleD
         _logger = logger;
     }
     
-    public async Task<RoleDto> Handle(UpdateRoleCommand command, CancellationToken cancellationToken = default)
+    public async Task<RoleDto> Handle(UpdateRoleCommand command, CancellationToken cancellationToken)
     {
         // 获取角色实体
         var role = await _unitOfWork.Roles.GetByIdWithPermissionsAsync(command.RoleId)

@@ -296,13 +296,11 @@ public class AuthController : ControllerBase
             }
 
             // 获取请求头中的令牌
-            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            var authHeader = Request.Headers.Authorization.FirstOrDefault();
             if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
             {
                 return Ok(new { message = "已注销" });
             }
-
-            var token = authHeader.Substring("Bearer ".Length).Trim();
 
             // 获取用户的所有刷新令牌
             var refreshTokens = await _unitOfWork.RefreshTokens.GetAllByUserIdAsync(userId);
@@ -374,7 +372,7 @@ public class AuthController : ControllerBase
     /// <summary>
     /// 验证密码
     /// </summary>
-    private bool VerifyPassword(string password, string storedHash)
+    private static bool VerifyPassword(string password, string storedHash)
     {
         var computedHash = HashPassword(password);
         return storedHash == computedHash;
@@ -383,7 +381,7 @@ public class AuthController : ControllerBase
     /// <summary>
     /// 对密码进行哈希处理
     /// </summary>
-    private string HashPassword(string password)
+    private static string HashPassword(string password)
     {
         using (var sha256 = SHA256.Create())
         {

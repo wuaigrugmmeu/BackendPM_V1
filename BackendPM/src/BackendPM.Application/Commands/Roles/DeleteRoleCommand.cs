@@ -40,7 +40,7 @@ public class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand>
         _logger = logger;
     }
     
-    public async Task Handle(DeleteRoleCommand command, CancellationToken cancellationToken = default)
+    public async Task Handle(DeleteRoleCommand command, CancellationToken cancellationToken)
     {
         // 获取角色实体
         var role = await _unitOfWork.Roles.GetByIdAsync(command.RoleId)

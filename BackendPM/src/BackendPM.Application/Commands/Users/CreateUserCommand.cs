@@ -67,7 +67,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
         _logger = logger;
     }
 
-    public async Task<UserDto> Handle(CreateUserCommand command, CancellationToken cancellationToken = default)
+    public async Task<UserDto> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
         // 检查用户名是否已存在
         if (await _unitOfWork.Users.ExistsAsync(u => u.Username == command.Username))
@@ -129,7 +129,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
     /// <summary>
     /// 密码哈希处理
     /// </summary>
-    private string HashPassword(string password)
+    private static string HashPassword(string password)
     {
         using (var sha256 = SHA256.Create())
         {

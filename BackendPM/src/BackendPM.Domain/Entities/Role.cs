@@ -165,7 +165,7 @@ public class Role : EntityBase
         return RolePermissions.Any(rp => rp.Permission.Code == permissionCode);
     }
     
-    private void ValidateName(string name)
+    private static void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException(ErrorMessages.Role.NameRequired, nameof(name));
@@ -174,7 +174,7 @@ public class Role : EntityBase
             throw new ArgumentException(ErrorMessages.Role.NameTooLong, nameof(name));
     }
     
-    private void ValidateCode(string code)
+    private static void ValidateCode(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
             throw new ArgumentException(ErrorMessages.Role.CodeRequired, nameof(code));

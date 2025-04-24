@@ -101,7 +101,7 @@ public class Permission : EntityBase
         {
             throw new BusinessRuleViolationException(ErrorMessages.Permission.SystemPermissionModificationForbidden);
         }
-        
+
         ValidateName(name);
         ValidateGroup(group);
         
@@ -116,7 +116,7 @@ public class Permission : EntityBase
     }
     
     // 验证方法保持不变
-    private void ValidateName(string name)
+    private static void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException(ErrorMessages.Permission.NameRequired, nameof(name));
@@ -125,7 +125,7 @@ public class Permission : EntityBase
             throw new ArgumentException(ErrorMessages.Permission.NameTooLong, nameof(name));
     }
     
-    private void ValidateCode(string code)
+    private static void ValidateCode(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
             throw new ArgumentException(ErrorMessages.Permission.CodeRequired, nameof(code));
@@ -134,7 +134,7 @@ public class Permission : EntityBase
             throw new ArgumentException(ErrorMessages.Permission.CodeTooLong, nameof(code));
     }
     
-    private void ValidateGroup(string group)
+    private static void ValidateGroup(string group)
     {
         if (string.IsNullOrWhiteSpace(group))
             throw new ArgumentException(ErrorMessages.Permission.GroupRequired, nameof(group));
