@@ -44,6 +44,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        // 添加缺少的仓储注册
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IMenuRepository, MenuRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // 注册权限服务
