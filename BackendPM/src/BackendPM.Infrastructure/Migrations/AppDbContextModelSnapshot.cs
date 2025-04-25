@@ -17,6 +17,107 @@ namespace BackendPM.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.4");
 
+            modelBuilder.Entity("BackendPM.Domain.Entities.Department", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ParentDepartmentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("ParentDepartmentId");
+
+                    b.ToTable("Departments", (string)null);
+                });
+
+            modelBuilder.Entity("BackendPM.Domain.Entities.Menu", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Component")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ParentMenuId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Path")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Visible")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("ParentMenuId");
+
+                    b.ToTable("Menus", (string)null);
+                });
+
             modelBuilder.Entity("BackendPM.Domain.Entities.Permission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -136,12 +237,35 @@ namespace BackendPM.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ParentRoleId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
 
+                    b.HasIndex("ParentRoleId");
+
                     b.ToTable("Roles", (string)null);
+                });
+
+            modelBuilder.Entity("BackendPM.Domain.Entities.RoleMenu", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("MenuId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("RoleId", "MenuId");
+
+                    b.HasIndex("MenuId");
+
+                    b.ToTable("RoleMenus", (string)null);
                 });
 
             modelBuilder.Entity("BackendPM.Domain.Entities.RolePermission", b =>
@@ -206,6 +330,27 @@ namespace BackendPM.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("BackendPM.Domain.Entities.UserDepartment", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UserId", "DepartmentId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("UserDepartments", (string)null);
+                });
+
             modelBuilder.Entity("BackendPM.Domain.Entities.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -224,6 +369,26 @@ namespace BackendPM.Infrastructure.Migrations
                     b.ToTable("UserRoles", (string)null);
                 });
 
+            modelBuilder.Entity("BackendPM.Domain.Entities.Department", b =>
+                {
+                    b.HasOne("BackendPM.Domain.Entities.Department", "ParentDepartment")
+                        .WithMany("ChildDepartments")
+                        .HasForeignKey("ParentDepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentDepartment");
+                });
+
+            modelBuilder.Entity("BackendPM.Domain.Entities.Menu", b =>
+                {
+                    b.HasOne("BackendPM.Domain.Entities.Menu", "ParentMenu")
+                        .WithMany("ChildMenus")
+                        .HasForeignKey("ParentMenuId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentMenu");
+                });
+
             modelBuilder.Entity("BackendPM.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("BackendPM.Domain.Entities.User", "User")
@@ -233,6 +398,35 @@ namespace BackendPM.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BackendPM.Domain.Entities.Role", b =>
+                {
+                    b.HasOne("BackendPM.Domain.Entities.Role", "ParentRole")
+                        .WithMany("ChildRoles")
+                        .HasForeignKey("ParentRoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentRole");
+                });
+
+            modelBuilder.Entity("BackendPM.Domain.Entities.RoleMenu", b =>
+                {
+                    b.HasOne("BackendPM.Domain.Entities.Menu", "Menu")
+                        .WithMany("RoleMenus")
+                        .HasForeignKey("MenuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackendPM.Domain.Entities.Role", "Role")
+                        .WithMany("RoleMenus")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Menu");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("BackendPM.Domain.Entities.RolePermission", b =>
@@ -254,6 +448,25 @@ namespace BackendPM.Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("BackendPM.Domain.Entities.UserDepartment", b =>
+                {
+                    b.HasOne("BackendPM.Domain.Entities.Department", "Department")
+                        .WithMany("UserDepartments")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackendPM.Domain.Entities.User", "User")
+                        .WithMany("UserDepartments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BackendPM.Domain.Entities.UserRole", b =>
                 {
                     b.HasOne("BackendPM.Domain.Entities.Role", "Role")
@@ -273,6 +486,20 @@ namespace BackendPM.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BackendPM.Domain.Entities.Department", b =>
+                {
+                    b.Navigation("ChildDepartments");
+
+                    b.Navigation("UserDepartments");
+                });
+
+            modelBuilder.Entity("BackendPM.Domain.Entities.Menu", b =>
+                {
+                    b.Navigation("ChildMenus");
+
+                    b.Navigation("RoleMenus");
+                });
+
             modelBuilder.Entity("BackendPM.Domain.Entities.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
@@ -280,6 +507,10 @@ namespace BackendPM.Infrastructure.Migrations
 
             modelBuilder.Entity("BackendPM.Domain.Entities.Role", b =>
                 {
+                    b.Navigation("ChildRoles");
+
+                    b.Navigation("RoleMenus");
+
                     b.Navigation("RolePermissions");
 
                     b.Navigation("UserRoles");
@@ -287,6 +518,8 @@ namespace BackendPM.Infrastructure.Migrations
 
             modelBuilder.Entity("BackendPM.Domain.Entities.User", b =>
                 {
+                    b.Navigation("UserDepartments");
+
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
